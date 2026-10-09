@@ -156,3 +156,9 @@ main{grid-template-rows:140px var(--book-height) calc(var(--copy-height) - 16px)
 footer.creator-credit{position:fixed;left:0;right:0;bottom:0;z-index:10;margin:0;padding:6px 0 8px;font:12px/1.5 'Pretendard',sans-serif;color:#54766f;background:linear-gradient(transparent,#f7f2e8 35%);pointer-events:none}
 body{padding-bottom:32px}
 @media(min-width:901px){footer.creator-credit{left:auto;right:20px;width:max-content;padding-inline:10px;border-radius:8px}}
+
+.prayer-callout{animation:prayer-hint-enter .4s ease-out both}
+.prayer-callout svg path:first-child{animation:prayer-hint-dashes 1.8s linear infinite;animation-play-state:inherit}
+@keyframes prayer-hint-enter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes prayer-hint-dashes{to{stroke-dashoffset:-18}}
+@media(prefers-reduced-motion:reduce){.prayer-callout,.prayer-callout svg path:first-child{animation:none}}
