@@ -93,7 +93,7 @@ window.popupBook={setProgress(p){progress=targetProgress=THREE.MathUtils.clamp(p
 
 // Scene 1 uses the original paper() silhouette, edge, back and hinge renderer.
 setupStory=async()=>{
- await Promise.all(['nineveh','houses'].map(async n=>assets[n]=await asset(n)));
+ await Promise.all(['nineveh','houses','jonah-back'].map(async n=>assets[n]=await asset(n)));
  const $=id=>document.getElementById(id);
  const text=(el,value)=>{if(el.textContent!==value)el.textContent=value;};
  const storyLeft=new THREE.Group(),storyRight=new THREE.Group();left.add(storyLeft);right.add(storyRight);
@@ -115,7 +115,18 @@ setupStory=async()=>{
  // Split the existing texture into articulated paper parts; no replacement face.
  const source=hero.children[0],baseGeo=source.geometry,uv=baseGeo.attributes.uv;
  hero.clear();const body=new THREE.Group();hero.add(body);
- function segment(x0,x1,y0,y1,px,py){const joint=new THREE.Group();joint.position.set(px,py,0);body.add(joint);const geo=new THREE.PlaneGeometry(x1-x0,y1-y0);geo.translate((x0+x1)/2-px,(y0+y1)/2-py,0);const gUV=geo.attributes.uv;for(let i=0;i<gUV.count;i++)gUV.setXY(i,THREE.MathUtils.lerp(uv.getX(0),uv.getX(1),(x0+.6+(x1-x0)*gUV.getX(i))/1.2),THREE.MathUtils.lerp(uv.getY(2),uv.getY(0),(y0+(y1-y0)*gUV.getY(i))/2.15));const mesh=new THREE.Mesh(geo,source.material.clone());mesh.material.side=THREE.DoubleSide;mesh.castShadow=true;mesh.receiveShadow=true;mesh.customDepthMaterial=source.customDepthMaterial;joint.add(mesh);return joint;}
+ function segment(x0,x1,y0,y1,px,py){const joint=new THREE.Group();joint.position.set(px,py,0);body.add(joint);const geo=new THREE.PlaneGeometry(x1-x0,y1-y0);geo.translate((x0+x1)/2-px,(y0+y1)/2-py,0);const gUV=geo.attributes.uv;for(let i=0;i<gUV.count;i++)gUV.setXY(i,THREE.MathUtils.lerp(uv.getX(0),uv.getX(1),(x0+.6+(x1-x0)*gUV.getX(i))/1.2),THREE.MathUtils.lerp(uv.getY(2),uv.getY(0),(y0+(y1-y0)*gUV.getY(i))/2.15));const mesh=new THREE.Mesh(geo,source.material.clone());mesh.material.side=THREE.FrontSide;mesh.position.z=.008;mesh.castShadow=true;mesh.receiveShadow=true;mesh.customDepthMaterial=source.customDepthMaterial;joint.add(mesh);
+ // A separately illustrated reverse prevents a mirrored face on the back.
+ const rear=assets['jonah-back'],rearGeo=geo.clone(),rearUV=rearGeo.attributes.uv;
+ for(let i=0;i<rearUV.count;i++){
+  const u=(gUV.getX(i)-uv.getX(0))/(uv.getX(1)-uv.getX(0));
+  const v=(gUV.getY(i)-uv.getY(2))/(uv.getY(0)-uv.getY(2));
+  rearUV.setXY(i,THREE.MathUtils.lerp(rear.x0/rear.iw,rear.x1/rear.iw,1-u),THREE.MathUtils.lerp(1-rear.y1/rear.ih,1-rear.y0/rear.ih,v));
+ }
+ const rearMesh=new THREE.Mesh(rearGeo,new THREE.MeshStandardMaterial({map:rear.tex,alphaTest:.94,roughness:1,side:THREE.BackSide}));
+ rearMesh.position.z=-.008;rearMesh.castShadow=true;rearMesh.receiveShadow=true;
+ rearMesh.customDepthMaterial=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,map:rear.tex,alphaTest:.94,side:THREE.DoubleSide});
+ joint.add(rearMesh);return joint;}
  const head=segment(-.6,.6,1.37,2.15,0,1.37);segment(-.6,.6,.26,1.37,0,.26);
  const footL=segment(-.6,0,0,.26,-.19,.26),footR=segment(0,.6,0,.26,.19,.26);
  const light=new THREE.PointLight(0xffce70,0,7,2);light.position.set(2.3,3,-.1);book.add(light);
@@ -162,7 +173,7 @@ setupStory=async()=>{
   }
   if(story.phase==='reopen'&&progress>.999){story.unfold=1;phase('narrate');}
   if(story.phase==='narrate'&&progress>.999){story.narrative+=dt;if(story.narrative>=15)phase('walk');}
-  if(story.phase==='walk'){story.walk=Math.min(1,story.time/2.8);if(story.walk===1){phase('arrived');say(lines[3]);}}
+  if(story.phase==='walk'){story.walk=THREE.MathUtils.clamp((story.time-.65)/2.8,0,1);if(story.walk===1){phase('arrived');say(lines[3]);}}
   const returning=story.phase==='return-turn',turning=locked();
   const travel=turning?smooth(0,turnDuration,story.time):0;
   const angleFraction=returning?1-travel:travel;
@@ -187,11 +198,15 @@ setupStory=async()=>{
   for(const path of paths)path.rotation.x=-.18*(1-smooth(.7,1.7,unfold));
   const t=story.narrative,walking=story.phase==='walk',atPort=story.phase==='arrived';
   const turnBody=t<4?smooth(0,3,t)*.17:t<10?.17:THREE.MathUtils.lerp(.17,-.42,smooth(11,14,t));
-  body.rotation.y=turnBody;body.rotation.z=walking?-.04+Math.sin(story.time*10)*.035:0;
-  head.rotation.x=t<4?-.12*smooth(0,2,t):-.06;
+  const harborHeading=Math.atan2(-2.1-.35,-.1-1.25);
+  const facing=walking?THREE.MathUtils.lerp(-.42,harborHeading,smooth(0,.65,story.time)):atPort?harborHeading:turnBody;
+  body.rotation.y=facing*smooth(.4,1,progress)*smooth(0,2.5,unfold);
+  const stepping=walking&&story.time>.65&&story.walk<1;
+  body.rotation.z=stepping?-.04+Math.sin((story.time-.65)*10)*.035:0;
+  head.rotation.x=walking||atPort?0:t<4?-.12*smooth(0,2,t):-.06;
   head.rotation.y=t>=10&&t<14?Math.sin((t-10)*3)*.17:0;
   head.rotation.z=t>=7&&t<10?Math.sin((t-7)*1.2)*.06:0;
-  footL.rotation.x=walking?Math.sin(story.time*10)*.55:0;footR.rotation.x=walking?-Math.sin(story.time*10)*.55:0;
+  footL.rotation.x=stepping?Math.sin((story.time-.65)*10)*.55:0;footR.rotation.x=stepping?-Math.sin((story.time-.65)*10)*.55:0;
   hero.position.x=THREE.MathUtils.lerp(.35,-2.1,smooth(0,1,story.walk));hero.position.z=THREE.MathUtils.lerp(1.25,-.1,smooth(0,1,story.walk));
   // On an open book both pages are coplanar; reparent the walking paper to
   // the left leaf at the crease so closing also keeps it on its destination.
