@@ -1,5 +1,5 @@
 import * as THREE from './vendor/three.module.js';
-import {createVessel} from './vessel.js?v=484890af4aa3';
+import {createVessel} from './vessel.js?v=181d27458bc5';
 
 export function createStorm({left,right,paper,pieces,assets,cream,grain,box,actorTemplate,stage,smooth}){
  const L=new THREE.Group(),R=new THREE.Group();left.add(L);right.add(R);
@@ -8,15 +8,16 @@ export function createStorm({left,right,paper,pieces,assets,cream,grain,box,acto
  const {ship,boat,sail,actor,sailorA,sailorB,cabin,cover}=createVessel({R,add,assets,cream,grain,box,actorTemplate});
  ship.position.set(.35,.15,.2);
  const jonah=actor(boat,.58);
- // Prayer cutouts are attached to the deck, so they follow the ship and page fold.
+ // Keep kneeling figures inside the deck and behind its front hull (z=.3).
+ // Their feet remain attached to the boat throughout the page fold.
  const prayerArt=assets['sailor-praying'];
  const prayingSailors=[0,1].map(n=>{
-  const h=n?.76:.8,w=h*(prayerArt.x1-prayerArt.x0)/(prayerArt.y1-prayerArt.y0);
+  const h=n?.62:.65,w=h*(prayerArt.x1-prayerArt.x0)/(prayerArt.y1-prayerArt.y0);
   const geometry=new THREE.PlaneGeometry(w,h);geometry.translate(0,h/2,0);
   const uv=geometry.attributes.uv;
   for(let i=0;i<uv.count;i++)uv.setXY(i,THREE.MathUtils.lerp(prayerArt.x0/prayerArt.iw,prayerArt.x1/prayerArt.iw,uv.getX(i)),THREE.MathUtils.lerp(1-prayerArt.y1/prayerArt.ih,1-prayerArt.y0/prayerArt.ih,uv.getY(i)));
   const material=new THREE.MeshStandardMaterial({map:prayerArt.tex,alphaTest:.94,roughness:1,side:THREE.DoubleSide,color:n?0xe6d8a6:0xffffff});
-  const figure=new THREE.Mesh(geometry,material);figure.position.set(n?.65:-.35,.65,.65);figure.castShadow=figure.receiveShadow=true;
+  const figure=new THREE.Mesh(geometry,material);figure.position.set(n?.94:.28,n?.60:.58,.15);figure.castShadow=figure.receiveShadow=true;
   figure.customDepthMaterial=new THREE.MeshDepthMaterial({map:prayerArt.tex,alphaTest:.94,depthPacking:THREE.RGBADepthPacking,side:THREE.DoubleSide});
   figure.visible=false;boat.add(figure);return figure;
  });
