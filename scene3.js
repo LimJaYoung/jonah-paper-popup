@@ -1,5 +1,5 @@
 import * as THREE from './vendor/three.module.js';
-import {createVessel} from './vessel.js?v=78f8a5e6eb7c';
+import {createVessel} from './vessel.js?v=3ea1974a6ec2';
 
 export function createStorm({left,right,paper,pieces,assets,cream,grain,box,actorTemplate,stage,smooth}){
  const L=new THREE.Group(),R=new THREE.Group();left.add(L);right.add(R);
@@ -103,7 +103,8 @@ export function createStorm({left,right,paper,pieces,assets,cream,grain,box,acto
    if(i===6){a.armL.rotation.z=2.55;a.armR.rotation.z=-2.55;a.head.rotation.x=.12;}
   });
   splash.visible=i===5&&t>=8&&t<8.7;splash.scale.setScalar(.7+.2*Math.sin((t-8)*Math.PI/.7));
-  dialogue.hidden=!(active&&steps[i][3]&&progress>.999);dialogue.textContent=steps[i][3]||'';
+  dialogue.hidden=!(active&&steps[i][3]&&progress>.999);const spoken=steps[i][3]||'';
+  if(dialogue.dataset.line!==spoken){dialogue.dataset.line=spoken;dialogue.replaceChildren();if(spoken){const [name,...body]=spoken.split(':');const label=document.createElement('span');label.className='dialogue-speaker';label.dataset.speaker=name;label.textContent=name+' : ';dialogue.append(label,document.createTextNode(body.join(':').trim()));}}
   sleep.hidden=!(active&&i<2&&progress>.999);project(sleep,cabin,0,1.2,.15);
   Object.assign(stage.dataset,{stormPraying:String(praying),stormPhase:state.phase,stormTime:t.toFixed(2),stormStrength:strength.toFixed(3),stormRoll:ship.rotation.z.toFixed(3),stormJonahY:jonah.root.position.y.toFixed(3),stormJonahVisible:String(jonah.root.visible),stormOars:String(i===4),stormFold:open.toFixed(3)});
  }

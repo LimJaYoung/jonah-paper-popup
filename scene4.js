@@ -1,4 +1,5 @@
-import {createKit,controller} from './story-kit.js?v=78f8a5e6eb7c';
+import * as THREE from './vendor/three.module.js';
+import {createKit,controller} from './story-kit.js?v=3ea1974a6ec2';
 export function createScene4(ctx){const k=createKit(ctx),{L,R,mat,hinge,oval,smooth}=k;k.waves();
  // Three paper-cut seaweed silhouettes, rooted on their own page hinges.
  const seaweed=[];
@@ -33,16 +34,22 @@ export function createScene4(ctx){const k=createKit(ctx),{L,R,mat,hinge,oval,smo
  return controller(steps,({state:s,open})=>{const i=s.index,t=s.time;
  seaweed.forEach((p,n)=>{p.rotation.z=Math.sin(s.clock*.8+n)*.035*open;});
  // Jonah stays in the water; only the fish travels toward him.
- k.pose(a,{arms:1.8});a.rig.rotation.z=-.55*open;
- a.root.position.set(-1.5,.65-.12*(i?1:smooth(0,4,t)),.4);a.root.visible=i<3;
+ k.pose(a,{arms:1.8});a.rig.rotation.z=(-.9+Math.sin(s.clock*1.15)*.12)*open;a.rig.scale.setScalar(.44);
+ a.root.position.set(-1.5,1.05+Math.sin(s.clock*1.35)*.11,.82);a.root.visible=i<3;
  const approach=i===1?smooth(0,5,t):i>1?1:0;
  const lunge=i===2?smooth(1.3,3.7,t):i>2?1:0;
  const retreat=i===2?smooth(4.8,6.5,t):i>2?1:0;
- f.root.position.set(2.15-1.15*approach-1.5*lunge+1.85*retreat,.16,-1+1.6*approach-1.6*retreat);
+ f.root.position.set(2.15-.6*approach-1.6*lunge+1.4*retreat,.16,-1+1.6*approach-1.6*retreat);
  f.tail.rotation.z=Math.sin(s.clock*(i===2?4:2))*.09*open;
  f.setMouth((i===2?smooth(0,1.3,t)*(1-smooth(3.7,4.7,t)):0)*open);
  // The advancing mouth passes over Jonah before he is concealed inside it.
- if(i===2)a.root.visible=lunge<.82;
+ if(i===2){
+  const caught=smooth(2.4,3.65,t);
+  // Capture happens in front of the dark mouth opening, never behind the body.
+  a.root.position.x=-1.5+(f.root.position.x-1.7+1.5)*caught;
+  a.root.position.y=THREE.MathUtils.lerp(a.root.position.y,1.38,caught);
+  a.rig.scale.setScalar(.44*(1-.94*caught));a.root.visible=caught<.995;
+ }
  f.rig.rotation.z=i===2?.035*Math.sin(Math.PI*smooth(4.7,5.5,t)):0;
 
  bubbles.forEach((b,n)=>{b.visible=i<2;b.position.y=.3+((s.clock*.25+n*.35)%1.8);});sun.visible=i===3&&Math.floor(t/1.5)%2===0;moon.visible=i===3&&!sun.visible;

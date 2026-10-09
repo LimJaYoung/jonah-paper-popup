@@ -1,4 +1,4 @@
-import {createVessel} from './vessel.js?v=78f8a5e6eb7c';
+import {createVessel} from './vessel.js?v=3ea1974a6ec2';
 import * as THREE from './vendor/three.module.js';
 
 // Uses the same paper renderer, actor artwork and page-local coordinate system.
@@ -31,7 +31,9 @@ export function createVoyage({left,right,paper,pieces,assets,cream,grain,box,act
  box(.9,.035,.4,wood,.45,0,0,plank);box(.9,.008,.025,gold,.45,.025,.18,plank);
  const {ship,boat,sail,actor,sailorA,sailorB,cabin,cover}=createVessel({R,add,assets,cream,grain,box,actorTemplate});
  const heroHinge=new THREE.Group();heroHinge.position.set(-1,.62,.85);L.add(heroHinge);
- const jonah=actor(heroHinge,.58); // original face, clothing, rear and shoulder hinges
+ const jonah=actor(heroHinge,.58);
+ const deckClip=new THREE.Plane(),clipPoint=new THREE.Vector3(),clipNormal=new THREE.Vector3();
+ const descentMaterials=[];jonah.root.traverse(m=>{if(m.isMesh){m.material=m.material.clone();descentMaterials.push(m.material);}}); // original face, clothing, rear and shoulder hinges
  const sleep=document.createElement('div');sleep.className='scene-label';sleep.textContent='쿨…';sleep.hidden=true;stage.appendChild(sleep);
  const hit=document.createElement('button');hit.id='voyage-boat';hit.className='boat-target';hit.setAttribute('aria-label','배를 눌러 요나 승선');hit.title='배를 눌러 요나의 여행을 이어가 보세요.';hit.hidden=true;stage.appendChild(hit);
  const callout=document.createElement('div');callout.className='voyage-callout';callout.hidden=true;
@@ -98,11 +100,13 @@ export function createVoyage({left,right,paper,pieces,assets,cream,grain,box,act
    const t=state.phase==='cabin'?state.time:4;
    jonah.body.rotation.y=THREE.MathUtils.lerp(-.65,-2.7,smooth(0,1,t));
    heroHinge.position.x=THREE.MathUtils.lerp(0,-.62,smooth(0,1.2,t));
-   heroHinge.position.y=.62-.5*smooth(1.2,3.2,t);
-   heroHinge.position.z=.16-.09*smooth(.8,1.7,t);
+   heroHinge.position.y=.62-1.5*smooth(1.2,3.5,t);
+   heroHinge.position.z=.34;
    pose(jonah,t<1.2?Math.sin(t*10):0);
    cover.rotation.y=-1.3*smooth(0,.7,t)*(1-smooth(2.8,4,t));
   }else cover.rotation.y=0;
+  boat.updateWorldMatrix(true,false);clipPoint.set(0,.6,0).applyMatrix4(boat.matrixWorld);clipNormal.set(0,1,0).transformDirection(boat.matrixWorld);deckClip.setFromNormalAndCoplanarPoint(clipNormal,clipPoint);
+  descentMaterials.forEach(m=>{m.clippingPlanes=entering?[deckClip]:null;});
   sleep.hidden=!(active&&['sleep','end'].includes(state.phase)&&progress>.999);
   hit.hidden=!(active&&state.phase==='ready'&&progress>.999);hit.disabled=paused;
   project(hit,boat,0,1.1,.1);project(sleep,cabin,0,1.2,.15);
