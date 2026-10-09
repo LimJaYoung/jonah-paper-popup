@@ -1,4 +1,5 @@
 import * as THREE from './vendor/three.module.js';
+import {createVoyage} from './scene2.js';
 const stage=document.querySelector('#stage'),slider=document.querySelector('#progress');
 const scene=new THREE.Scene();
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
@@ -82,7 +83,7 @@ let updateStory,setupStory;
 let progress=0,targetProgress=0,replaying=false,paused=false,last=performance.now(),swayTime=0;const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const smooth=(a,b,v)=>{const t=THREE.MathUtils.clamp((v-a)/(b-a),0,1);return t*t*(3-2*t)};
 function apply(p,time=0){whaleLeft.rotation.set(0,-Math.PI*(1-smooth(.12,.96,p)),0);leftHinge.rotation.z=-Math.PI*(1-p);updateCoverBinding(leftHinge.rotation.z);updatePageBinding(leftHinge.rotation.z);for(const it of openingPieces){const unfold=smooth(it.delay,.94,p);const sway=(reduce?0:Math.sin(time*.65+it.phase)*.012)*smooth(.94,1,p);it.pivot.rotation.x=it.direction*(Math.PI/2*(1-unfold)+sway);}
- slider.value=Math.round(p*1000);document.querySelector('#percentage').value=`${Math.round(p*100)}%`;document.querySelector('#state-label').textContent=p<.001?'닫힌 책':p>.999?(story.scene===0?'펼쳐진 바다':'펼쳐진 마을'):'펼쳐지는 중';}
+ slider.value=Math.round(p*1000);document.querySelector('#percentage').value=`${Math.round(p*100)}%`;document.querySelector('#state-label').textContent=p<.001?'닫힌 책':p>.999?(['펼쳐진 바다','펼쳐진 마을','잔잔한 출항'][story.scene]):'펼쳐지는 중';}
 function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;const distance=Math.max(15.5,13.4/(2*Math.tan(THREE.MathUtils.degToRad(16))*camera.aspect));camera.position.copy(target).add(new THREE.Vector3(0,.88,2.2).normalize().multiplyScalar(distance));camera.lookAt(target);camera.updateProjectionMatrix();}window.addEventListener('resize',resize);resize();
 function buttonPause(){document.querySelector('#pause').innerHTML=paused?'계속 재생 <span>▷</span>':'일시 정지 <span>Ⅱ</span>';document.querySelector('#pause').setAttribute('aria-label',paused?'움직임 계속 재생':'움직임 일시 정지');}
 // Story controller owns all inputs, including the original book controls.
@@ -93,7 +94,7 @@ window.popupBook={setProgress(p){progress=targetProgress=THREE.MathUtils.clamp(p
 
 // Scene 1 uses the original paper() silhouette, edge, back and hinge renderer.
 setupStory=async()=>{
- await Promise.all(['nineveh','houses','jonah-back'].map(async n=>assets[n]=await asset(n)));
+ await Promise.all(['nineveh','houses','jonah-back','sailor'].map(async n=>assets[n]=await asset(n)));
  const $=id=>document.getElementById(id);
  const text=(el,value)=>{if(el.textContent!==value)el.textContent=value;};
  const storyLeft=new THREE.Group(),storyRight=new THREE.Group();left.add(storyLeft);right.add(storyRight);
@@ -173,9 +174,11 @@ setupStory=async()=>{
  const turn=new THREE.Group();turn.position.y=.34;book.add(turn);
  box(pw-.12,.025,pd-.18,cream,pw/2,0,0,turn);turn.visible=false;
  const reverse=new THREE.Group();reverse.rotation.z=-Math.PI;turn.add(reverse);
- const turnDuration=3;
- function mountTurn(){turn.add(openingRight);reverse.add(storyLeft);turn.visible=true;}
- function unmountTurn(){right.add(openingRight);left.add(storyLeft);turn.visible=false;}
+ const voyage=createVoyage({left,right,paper,pieces,assets,cream,grain,box,actorTemplate:body,stage,smooth});
+ const spreads=[{L:openingLeft,R:openingRight},{L:storyLeft,R:storyRight},voyage];
+ const turnDuration=3;let transition;
+ function mountTurn(to){transition={from:story.scene,to,low:Math.min(story.scene,to),high:Math.max(story.scene,to)};turn.add(spreads[transition.low].R);reverse.add(spreads[transition.high].L);turn.visible=true;}
+ function unmountTurn(){right.add(spreads[transition.low].R);left.add(spreads[transition.high].L);turn.visible=false;}
 
  function label(id,text,cls='scene-label'){const el=document.createElement('div');el.id=id;el.className=cls;el.textContent=text;stage.appendChild(el);return el}
  const cityLabel=label('city-label','니느웨'),portLabel=label('port-label','항구'),speech=label('speech','나는 가기 싫은데…');
@@ -183,20 +186,22 @@ setupStory=async()=>{
  function say(text){if($('narration').textContent!==text)$('narration').textContent=text;}
  const locked=()=>['turn','return-turn'].includes(story.phase);
  function resetAct(){story.narrative=0;story.walk=0;story.unfold=0;hero.position.set(.35,.11,1.25);body.rotation.set(0,0,0);head.rotation.set(0,0,0);footL.rotation.set(0,0,0);footR.rotation.set(0,0,0);say('');}
- function begin(){if(story.scene!==0||locked()||progress<.999)return;resetAct();mountTurn();story.phase='turn';story.time=0;replaying=false;paused=false;buttonPause();}
- function previous(){if(locked()||progress<.999)return;if(story.scene===0){targetProgress=0;replaying=false;paused=false;buttonPause();return;}mountTurn();story.phase='return-turn';story.time=0;replaying=false;paused=false;targetProgress=1;buttonPause();}
+ function begin(to=story.scene+1){if(locked()||progress<.999||to>2)return;if(to===1&&story.scene===0)resetAct();if(to===2)voyage.reset();mountTurn(to);story.phase='turn';story.time=0;replaying=false;paused=false;buttonPause();}
+ function previous(){if(locked()||progress<.999)return;if(story.scene===0){targetProgress=0;replaying=false;paused=false;buttonPause();return;}mountTurn(story.scene-1);story.phase='return-turn';story.time=0;replaying=false;paused=false;targetProgress=1;buttonPause();}
  $('previous').onclick=previous;
  // A single primary action connects the closed book and every available spread.
  $('open').onclick=()=>{
   if(locked()||Math.abs(targetProgress-progress)>.001)return;
   if(progress<.999){targetProgress=1;replaying=false;paused=false;buttonPause();}
   else if(story.scene===0)begin();
+  else if(story.scene===2){voyage.next();paused=false;buttonPause();}
+  else if(story.phase==='arrived')begin(2);
   else if(story.phase==='narrate'){
    story.narrative=story.narrative<4?4:story.narrative<10?10:15;
    paused=false;buttonPause();
   }
  };
- $('replay').onclick=()=>{if(locked())return;targetProgress=0;replaying=true;paused=false;if(story.scene===1){resetAct();story.phase='reopen';}buttonPause()};
+ $('replay').onclick=()=>{if(locked())return;if(story.scene===2){voyage.reset();targetProgress=1;replaying=false;paused=false;buttonPause();return;}targetProgress=0;replaying=true;paused=false;if(story.scene===1){resetAct();story.phase='reopen';}buttonPause()};
  $('pause').onclick=()=>{paused=!paused;buttonPause()};
  slider.addEventListener('input',()=>{if(locked())return;progress=targetProgress=Number(slider.value)/1000;replaying=false;apply(progress,swayTime)});
  function project(el,obj,x,y,z){const v=obj.localToWorld(new THREE.Vector3(x,y,z)).project(camera);el.style.left=`${(v.x*.5+.5)*stage.clientWidth}px`;el.style.top=`${(-v.y*.5+.5)*stage.clientHeight}px`;}
@@ -204,8 +209,10 @@ setupStory=async()=>{
  updateStory=dt=>{
   const busy=locked();if(busy||progress>.999)story.time+=dt;
   if(locked()&&story.time>=turnDuration){
-   const back=story.phase==='return-turn';unmountTurn();story.scene=back?0:1;
-   if(back){resetAct();phase('idle');}else{story.unfold=1;phase('narrate');}
+   const back=story.phase==='return-turn';unmountTurn();story.scene=transition.to;
+   if(story.scene===0){resetAct();phase('idle');}
+   else if(story.scene===2){phase('voyage');}
+   else {story.unfold=1;if(back){story.walk=1;story.narrative=15;phase('arrived');say(lines[3]);}else phase('narrate');}
   }
   if(story.phase==='reopen'&&progress>.999){story.unfold=1;phase('narrate');}
   if(story.phase==='narrate'&&progress>.999){story.narrative+=dt;if(story.narrative>=15)phase('walk');}
@@ -215,23 +222,16 @@ setupStory=async()=>{
   const angleFraction=returning?1-travel:travel;
   // One continuous motion: closing the old spread and opening the new spread
   // meet at the vertical leaf. Fold amounts derive from that SAME page angle.
-  const ocean=turning?smooth(.52,1,1-angleFraction):progress;
-  const incoming=turning?smooth(.52,1,angleFraction):story.unfold;
-  if(turning){
-   turn.rotation.z=Math.PI*angleFraction;
-   for(const it of openingPieces)it.pivot.rotation.x=it.direction*Math.PI/2*(1-smooth(it.delay,.94,ocean));
-   whaleLeft.rotation.y=-Math.PI*(1-smooth(.12,.96,ocean));
-  }
-  // At the vertical crease the old spread has closed. Its right-hand art
-  // stays on the hidden front; the next left-hand art reveals on the back.
-  openingRight.visible=turning||story.scene===0;
-  openingLeft.visible=turning?angleFraction<.52:story.scene===0;
-  storyLeft.visible=turning||story.scene===1;
-  storyRight.visible=turning?angleFraction>.06:story.scene===1;
-  let unfold=turning?incoming*3:story.unfold*3;
+  const weights=[0,0,0];weights[story.scene]=1;
+  if(turning){weights.fill(0);weights[transition.low]=smooth(.52,1,1-angleFraction);weights[transition.high]=smooth(.52,1,angleFraction);turn.rotation.z=Math.PI*angleFraction;}
+  const ocean=weights[0]*progress;
+  if(turning){for(const it of openingPieces)it.pivot.rotation.x=it.direction*Math.PI/2*(1-smooth(it.delay,.94,ocean));whaleLeft.rotation.y=-Math.PI*(1-smooth(.12,.96,ocean));}
+  spreads.forEach((spread,i)=>{spread.L.visible=turning?(i===transition.low?angleFraction<.52:i===transition.high):i===story.scene;spread.R.visible=turning?(i===transition.low||i===transition.high&&angleFraction>.06):i===story.scene;});
+  let unfold=weights[1]*3;
   if(story.phase==='reopen')unfold=3;
+  voyage.update({dt,active:story.scene===2&&!turning,unfold:weights[2]*3,progress,paused,project});
   for(const it of newPieces){const a=smooth(it.delay,it.delay+1,unfold)*smooth(it.delay/8,.95,progress);it.pivot.rotation.x=it.direction*Math.PI/2*(1-a);}
-  const t=story.narrative,walking=story.phase==='walk',atPort=story.phase==='arrived';
+  const t=story.narrative,walking=story.phase==='walk',atPort=story.walk===1;
   const turnBody=t<4?smooth(0,3,t)*.17:t<10?.17:THREE.MathUtils.lerp(.17,-.42,smooth(11,14,t));
   const routeProgress=smooth(0,1,story.walk),routePoint=harborRoute.getPoint(routeProgress),routeTangent=harborRoute.getTangent(routeProgress);
   const harborHeading=Math.atan2(routeTangent.x,routeTangent.z);
@@ -254,20 +254,22 @@ setupStory=async()=>{
   const lightAmount=(story.scene===1||turning)?smooth(2.35,3,unfold)*smooth(.6,1,progress):0;light.intensity=lightAmount*3;glow.material.opacity=lightAmount;
   if(story.phase==='narrate')say(t<4?lines[0]:t<10?lines[1]:lines[2]);
   const active=story.scene===1&&progress>.999&&!turning;
-  $('story-nav').hidden=story.scene!==1;$('narration').hidden=!active||['reopen'].includes(story.phase);
+  const voyageActive=story.scene===2&&progress>.999&&!turning;
+  if(voyageActive)say(voyage.caption());
+  $('story-nav').hidden=story.scene===0;$('narration').hidden=!(active||voyageActive)||story.phase==='reopen';
   $('previous').disabled=locked()||progress<.999||Math.abs(targetProgress-progress)>.001;
   cityLabel.hidden=portLabel.hidden=!(active&&unfold>=2.8);speech.hidden=!(active&&t>=12&&!walking&&!atPort);
-  text($('story-hint'),atPort?'마지막 장면 · 요나가 항구에 도착했어요':locked()?'종이 이야기가 펼쳐지고 있어요…':'');
+  text($('story-hint'),voyageActive?voyage.hint():atPort?'다음 · 항구에서 배에 올라요':locked()?'종이 이야기가 펼쳐지고 있어요…':'');
   for(const id of ['replay','progress'])$(id).disabled=locked();
   const movingBook=Math.abs(targetProgress-progress)>.001;
-  $('open').title=progress<.999?'책 펼치기':story.scene===0?'다음 페이지':atPort?'마지막 장면입니다':walking?'요나가 항구로 걷고 있어요':'다음 이야기 구간';
-  $('open').disabled=locked()||movingBook||(progress>.999&&story.scene===1&&story.phase!=='narrate');
-  text(document.querySelector('h1'),story.scene===0?'종이 사이로, 바다가 피어나다.':'요나야, 니느웨로 가렴');
-  text(document.querySelector('.intro'),story.scene===0?'책을 펼치면 시작되는 작은 모험':'하나의 부름, 두 갈래의 길');
-  text(document.querySelector('.chapter'),story.scene===0?'오프닝 표지':'본문 씬 1');text($('scene-name'),story.scene===0?'바다 위의 요나':'요나야, 니느웨로 가렴');
-  stage.setAttribute('aria-label',story.scene===0?'청록색 책이 열리며 파도와 배, 요나, 큰 물고기가 펼쳐지는 3D 종이 팝업북':'두 갈래 길 앞의 요나, 오른쪽 니느웨 성문과 왼쪽 작은 항구가 펼쳐진 종이 팝업북');
+  $('open').title=progress<.999?'책 펼치기':story.scene===0?'다음 페이지':story.scene===2?(voyage.canNext()?'승선 이야기 이어가기':'이야기가 이어지고 있어요'):atPort?'다음 페이지':walking?'요나가 항구로 걷고 있어요':'다음 이야기 구간';
+  $('open').disabled=locked()||movingBook||(progress>.999&&(story.scene===1&&!['narrate','arrived'].includes(story.phase)||story.scene===2&&!voyage.canNext()));
+  text(document.querySelector('h1'),['종이 사이로, 바다가 피어나다.','요나야, 니느웨로 가렴','반대 방향으로 떠난 배'][story.scene]);
+  text(document.querySelector('.intro'),['책을 펼치면 시작되는 작은 모험','하나의 부름, 두 갈래의 길','항구를 떠나, 잔잔한 바다로'][story.scene]);
+  text(document.querySelector('.chapter'),['오프닝 표지','본문 씬 1','본문 씬 2'][story.scene]);text($('scene-name'),['바다 위의 요나','요나야, 니느웨로 가렴','반대 방향으로 떠난 배'][story.scene]);
+  stage.setAttribute('aria-label',story.scene===2?'항구와 잔잔한 바다, 요나와 두 선원이 탄 배가 펼쳐진 종이 팝업북':story.scene===0?'청록색 책이 열리며 파도와 배, 요나, 큰 물고기가 펼쳐지는 3D 종이 팝업북':'두 갈래 길 앞의 요나, 오른쪽 니느웨 성문과 왼쪽 작은 항구가 펼쳐진 종이 팝업북');
   if(turning)$('state-label').textContent=travel<.5?'페이지와 종이가 함께 접히는 중':'다음 페이지와 종이가 함께 펼쳐지는 중';
-  stage.dataset.phase=story.phase;stage.dataset.scene=String(story.scene);stage.dataset.walk=String(story.walk);stage.dataset.oceanVisible=String(openingRight.visible);stage.dataset.pageAngle=turn.rotation.z.toFixed(3);stage.dataset.pageTurning=String(turn.visible);stage.dataset.unfold=unfold.toFixed(3);stage.dataset.oceanFold=ocean.toFixed(3);stage.dataset.artOnLeaf=String(openingRight.parent===turn&&storyLeft.parent===reverse);stage.dataset.armsDown=armsDown.toFixed(3);
+  stage.dataset.phase=story.phase;stage.dataset.scene=String(story.scene);stage.dataset.walk=String(story.walk);stage.dataset.oceanVisible=String(openingRight.visible);stage.dataset.pageAngle=turn.rotation.z.toFixed(3);stage.dataset.pageTurning=String(turn.visible);stage.dataset.unfold=unfold.toFixed(3);stage.dataset.oceanFold=ocean.toFixed(3);stage.dataset.artOnLeaf=String(turning&&spreads[transition.low].R.parent===turn&&spreads[transition.high].L.parent===reverse);stage.dataset.armsDown=armsDown.toFixed(3);
   scene.updateMatrixWorld(true);project(cityLabel,gate,0,2.45,0);project(portLabel,harborBoat,0,1.65,0);project(speech,hero,.15,2.4,0);
  };
 };
