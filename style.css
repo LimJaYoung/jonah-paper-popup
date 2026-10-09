@@ -32,3 +32,27 @@
 #qa-tools{display:flex;flex-wrap:wrap;gap:8px;max-width:100%;padding:8px}#qa-tools input{width:65px}
 
 h1{font-weight:400;letter-spacing:-.025em}#narration{line-height:1.65}
+
+/* Quiet supporting copy and a compact, tactile playback panel. */
+@font-face{font-family:'Pretendard';src:url('./assets/fonts/PretendardVariable.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+.eyebrow,.intro{font-family:'Pretendard',sans-serif}
+.eyebrow{font-weight:600;letter-spacing:.12em}
+.intro{font-weight:400;color:#78847b}
+.controls{width:calc(100% - 36px);max-width:440px;margin:0 auto;padding:18px 20px 20px;border:1px solid #dce2d7;border-radius:24px;background:#fffdf8;box-shadow:0 8px 28px #214b4e08}
+.actions{gap:10px;border:0;padding:0}
+.actions button{display:flex;flex-direction:row-reverse;align-items:center;justify-content:center;gap:9px;min-height:46px;padding:0 16px;font:600 13px 'Pretendard',sans-serif;border-radius:14px;transition:background .15s,box-shadow .15s}
+.actions button span{margin:0;font:20px/1 Arial,sans-serif}
+#replay{background:#f3f5ee;color:#49675f;border:1px solid #e1e6dc}
+#replay:hover{background:#e8eee3}
+#pause{background:#246768;color:#fffdf3;border:1px solid #246768;box-shadow:0 3px 7px #24676818}
+#pause:hover{background:#195758}
+.scrubber{display:grid;grid-template-columns:1fr auto;gap:9px 12px;padding:19px 2px 0;font:500 11px 'Pretendard',sans-serif;color:#6e8279}
+.scrubber label{grid-column:1;grid-row:1}
+.scrubber output{grid-column:2;grid-row:1;font-weight:600;color:#38645e}
+#progress{grid-column:1 / -1;grid-row:2;appearance:none;-webkit-appearance:none;width:100%;height:22px;margin:0;background:transparent;cursor:pointer}
+#progress::-webkit-slider-runnable-track{height:5px;border-radius:5px;background:linear-gradient(to right,#39827a var(--fill,0%),#e4e9df var(--fill,0%))}
+#progress::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:17px;height:17px;margin-top:-6px;border-radius:50%;background:#fffdf7;border:4px solid #347c74;box-shadow:0 1px 4px #214b4e22}
+#progress::-moz-range-track{height:5px;border-radius:5px;background:#e4e9df}
+#progress::-moz-range-progress{height:5px;border-radius:5px;background:#39827a}
+#progress::-moz-range-thumb{width:10px;height:10px;border:4px solid #347c74;border-radius:50%;background:#fffdf7}
+@media(max-width:600px){.controls{padding:15px 16px 16px;border-radius:21px}.actions button{font-size:12px;min-height:44px}.scrubber{padding-top:16px}}
