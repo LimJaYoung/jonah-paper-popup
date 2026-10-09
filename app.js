@@ -1,12 +1,12 @@
 const titles=['큰 물고기가 나타났어요','하나님, 제 기도를 들어주세요','다시 시작할 기회','니느웨 사람들이 달라졌어요','하나님은 모두를 아끼세요'];
-import {createScene4} from './scene4.js?v=1af45746ff10';
-import {createScene5} from './scene5.js?v=1af45746ff10';
-import {createScene6} from './scene6.js?v=1af45746ff10';
-import {createScene7} from './scene7.js?v=1af45746ff10';
-import {createScene8} from './scene8.js?v=1af45746ff10';
+import {createScene4} from './scene4.js?v=c8182298ad7a';
+import {createScene5} from './scene5.js?v=c8182298ad7a';
+import {createScene6} from './scene6.js?v=c8182298ad7a';
+import {createScene7} from './scene7.js?v=c8182298ad7a';
+import {createScene8} from './scene8.js?v=c8182298ad7a';
 import * as THREE from './vendor/three.module.js';
-import {createStorm} from './scene3.js?v=1af45746ff10';
-import {createVoyage} from './scene2.js?v=1af45746ff10';
+import {createStorm} from './scene3.js?v=c8182298ad7a';
+import {createVoyage} from './scene2.js?v=c8182298ad7a';
 const stage=document.querySelector('#stage'),slider=document.querySelector('#progress');
 const scene=new THREE.Scene();
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
@@ -233,7 +233,7 @@ setupStory=async()=>{
   else if(story.scene===2){if(voyage.state.phase==='end')begin(3);else voyage.next();paused=false;buttonPause();}
   else if(story.phase==='arrived')begin(2);
   else if(story.phase==='narrate'){
-   story.narrative=story.narrative<4?4:story.narrative<10?10:15;
+   story.narrative=story.narrative<4?4:story.narrative<10?10:13.5;
    paused=false;buttonPause();
   }
  };
@@ -250,10 +250,10 @@ setupStory=async()=>{
    else if(story.scene===2){phase('voyage');}
    else if(story.scene===3){phase('storm');}
    else if(story.scene>=4){phase('chapter');}
-   else {story.unfold=1;if(back){story.walk=1;story.narrative=15;phase('arrived');say(lines[3]);}else phase('narrate');}
+   else {story.unfold=1;if(back){story.walk=1;story.narrative=13.5;phase('arrived');say(lines[3]);}else phase('narrate');}
   }
   if(story.phase==='reopen'&&progress>.999){story.unfold=1;phase('narrate');}
-  if(story.phase==='narrate'&&progress>.999){story.narrative+=dt;if(story.narrative>=15)phase('walk');}
+  if(story.phase==='narrate'&&progress>.999){story.narrative+=dt;if(story.narrative>=13.5)phase('walk');}
   if(story.phase==='walk'){story.walk=THREE.MathUtils.clamp((story.time-.65)/2.8,0,1);if(story.walk===1){phase('arrived');say(lines[3]);}}
   const returning=story.phase==='return-turn',turning=locked();
   const travel=turning?THREE.MathUtils.clamp(story.time/turnDuration,0,1):0;
@@ -273,7 +273,8 @@ setupStory=async()=>{
   storm.update({dt,active:story.scene===3&&!turning,unfold:weights[3]*3,progress,paused,project});
   chapters.forEach((c,i)=>c.update({dt,active:story.scene===i+4&&!turning&&!ending,unfold:weights[i+4]*3,progress,paused,project}));
   for(const it of newPieces){const a=smooth(.04,.94,unfold/3)*smooth(it.delay/8,.95,progress);it.pivot.rotation.x=it.direction*Math.PI/2*(1-a);}
-  const t=story.narrative,walking=story.phase==='walk',atPort=story.walk===1;
+  // Compress only the refusal beat from 5 seconds to 3.5; preserve all poses.
+  const t=story.narrative<=10?story.narrative:10+(story.narrative-10)*(5/3.5),walking=story.phase==='walk',atPort=story.walk===1;
   const turnBody=t<4?smooth(0,3,t)*.17:t<10?.17:THREE.MathUtils.lerp(.17,-.42,smooth(11,14,t));
   const routeProgress=smooth(0,1,story.walk),routePoint=harborRoute.getPoint(routeProgress),routeTangent=harborRoute.getTangent(routeProgress);
   const harborHeading=Math.atan2(routeTangent.x,routeTangent.z);
