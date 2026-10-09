@@ -1,12 +1,12 @@
 const titles=['큰 물고기가 나타났어요','하나님, 제 기도를 들어주세요','다시 시작할 기회','니느웨 사람들이 달라졌어요','하나님은 모두를 아끼세요'];
-import {createScene4} from './scene4.js?v=7505387c8fd6';
-import {createScene5} from './scene5.js?v=7505387c8fd6';
-import {createScene6} from './scene6.js?v=7505387c8fd6';
-import {createScene7} from './scene7.js?v=7505387c8fd6';
-import {createScene8} from './scene8.js?v=7505387c8fd6';
+import {createScene4} from './scene4.js?v=7a855cc3ec35';
+import {createScene5} from './scene5.js?v=7a855cc3ec35';
+import {createScene6} from './scene6.js?v=7a855cc3ec35';
+import {createScene7} from './scene7.js?v=7a855cc3ec35';
+import {createScene8} from './scene8.js?v=7a855cc3ec35';
 import * as THREE from './vendor/three.module.js';
-import {createStorm} from './scene3.js?v=7505387c8fd6';
-import {createVoyage} from './scene2.js?v=7505387c8fd6';
+import {createStorm} from './scene3.js?v=7a855cc3ec35';
+import {createVoyage} from './scene2.js?v=7a855cc3ec35';
 const stage=document.querySelector('#stage'),slider=document.querySelector('#progress');
 const scene=new THREE.Scene();
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
@@ -296,7 +296,7 @@ setupStory=async()=>{
   $('open').title=progress<.999?'책 펼치기':story.scene===0?'다음 페이지':story.scene===3?(storm.state.phase==='end'?'다음 페이지':'이야기가 이어지고 있어요'):story.scene===2?(voyage.canNext()?'승선 이야기 이어가기':'이야기가 이어지고 있어요'):atPort?'다음 페이지':walking?'요나가 항구로 걷고 있어요':'다음 이야기 구간';
   $('open').disabled=!!ending||locked()||movingBook||(progress>.999&&(story.scene===1&&!['narrate','arrived'].includes(story.phase)||story.scene===2&&!voyage.canNext()||story.scene===3&&storm.state.phase!=='end'&&!storm.canNext()||story.scene>=4&&(!spreads[story.scene].canNext()||story.scene===8&&spreads[8].state.phase==='end')));
   
-  text(document.querySelector('h1'),['종이 사이로, 바다가 피어나다.','요나야, 니느웨로 가렴','반대 방향으로 떠난 배','거센 바람과 커다란 파도',...titles][story.scene]);
+  text(document.querySelector('h1'),['하나님께 돌아온 요나','요나야, 니느웨로 가렴','반대 방향으로 떠난 배','거센 바람과 커다란 파도',...titles][story.scene]);
   text(document.querySelector('.intro'),['책을 펼치면 시작되는 작은 모험','하나의 부름, 두 갈래의 길','항구를 떠나, 잔잔한 바다로','폭풍 속에서, 고요한 바다로','바닷속에 준비된 만남','고요한 곳에서 드리는 기도','다시 걸어가는 길','말씀을 듣고 달라지는 도시','함께 생각하는 마지막 질문'][story.scene]);
   text(document.querySelector('.chapter'),['오프닝 표지','본문 씬 1','본문 씬 2','본문 씬 3',...titles.map((_,i)=>`본문 씬 ${i+4}`)][story.scene]);text($('scene-name'),['바다 위의 요나','요나야, 니느웨로 가렴','반대 방향으로 떠난 배','거센 바람과 커다란 파도',...titles][story.scene]);
   stage.setAttribute('aria-label',story.scene===3?'거센 종이 파도와 구름 사이의 배, 요나와 선원들이 펼쳐진 종이 팝업북':story.scene===2?'항구와 잔잔한 바다, 요나와 두 선원이 탄 배가 펼쳐진 종이 팝업북':story.scene===0?'청록색 책이 열리며 파도와 배, 요나, 큰 물고기가 펼쳐지는 3D 종이 팝업북':'두 갈래 길 앞의 요나, 오른쪽 니느웨 성문과 왼쪽 작은 항구가 펼쳐진 종이 팝업북');
