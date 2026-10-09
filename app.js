@@ -1,12 +1,12 @@
 const titles=['큰 물고기가 나타났어요','하나님, 제 기도를 들어주세요','다시 시작할 기회','니느웨 사람들이 달라졌어요','하나님은 모두를 아끼세요'];
-import {createScene4} from './scene4.js?v=95a3a1b20c25';
-import {createScene5} from './scene5.js?v=95a3a1b20c25';
-import {createScene6} from './scene6.js?v=95a3a1b20c25';
-import {createScene7} from './scene7.js?v=95a3a1b20c25';
-import {createScene8} from './scene8.js?v=95a3a1b20c25';
+import {createScene4} from './scene4.js?v=7698611052b4';
+import {createScene5} from './scene5.js?v=7698611052b4';
+import {createScene6} from './scene6.js?v=7698611052b4';
+import {createScene7} from './scene7.js?v=7698611052b4';
+import {createScene8} from './scene8.js?v=7698611052b4';
 import * as THREE from './vendor/three.module.js';
-import {createStorm} from './scene3.js?v=95a3a1b20c25';
-import {createVoyage} from './scene2.js?v=95a3a1b20c25';
+import {createStorm} from './scene3.js?v=7698611052b4';
+import {createVoyage} from './scene2.js?v=7698611052b4';
 const stage=document.querySelector('#stage'),slider=document.querySelector('#progress');
 const scene=new THREE.Scene();
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
@@ -218,7 +218,7 @@ setupStory=async()=>{
  const lines=['어느 날, 하나님이 요나를 부르셨어요.','요나야, 니느웨로 가렴. 사람들이 나쁜 행동을 멈추도록 말해 주렴.','하지만 요나는 니느웨에 가고 싶지 않았어요.','요나는 반대쪽으로 가는 배를 타기로 했어요.'];
  function say(text){if($('narration').textContent!==text)$('narration').textContent=text;}
  const locked=()=>['turn','return-turn'].includes(story.phase);
- function resetAct(){story.narrative=0;story.walk=0;story.unfold=0;hero.position.set(.35,.11,1.25);body.rotation.set(0,0,0);head.rotation.set(0,0,0);footL.rotation.set(0,0,0);footR.rotation.set(0,0,0);say('');}
+ function resetAct(){story.narrative=0;story.walk=0;story.unfold=0;hero.position.set(.35,.11,1.25);hero.scale.setScalar(1);body.rotation.set(0,0,0);head.rotation.set(0,0,0);footL.rotation.set(0,0,0);footR.rotation.set(0,0,0);say('');}
  function begin(to=story.scene+1){if(locked()||progress<.999||to>8||ending)return;if(to===1&&story.scene===0)resetAct();if(to===2)voyage.reset();if(to===3)storm.reset();if(to>=4)spreads[to].reset();mountTurn(to);story.phase='turn';story.time=0;replaying=false;paused=false;buttonPause();}
  function previous(){if(locked()||ending||progress<.999)return;if(story.scene===0){targetProgress=0;replaying=false;paused=false;buttonPause();return;}if(story.scene===3)voyage.reset();if(story.scene>=4)spreads[story.scene-1].reset();mountTurn(story.scene-1);story.phase='return-turn';story.time=0;replaying=false;paused=false;targetProgress=1;buttonPause();}
  $('previous').onclick=previous;
@@ -289,6 +289,9 @@ setupStory=async()=>{
   head.rotation.z=t>=7&&t<10?Math.sin((t-7)*1.2)*.06:0;
   footL.rotation.x=stepping?Math.sin((story.time-.65)*10)*.55:0;footR.rotation.x=stepping?-Math.sin((story.time-.65)*10)*.55:0;
   hero.position.x=routePoint.x;hero.position.z=routePoint.z;
+  // Shrink around the foot hinge as Jonah recedes along the harbor path.
+  // Derive scale from route position so pause, replay, and return stay consistent.
+  hero.scale.setScalar(THREE.MathUtils.lerp(1,.42,routeProgress));
   // On an open book both pages are coplanar; reparent the walking paper to
   // the left leaf at the crease so closing also keeps it on its destination.
   const host=hero.position.x<0?storyLeft:storyRight;if(hero.parent!==host){host.add(hero);newPieces.find(p=>p.pivot===hero).parent=host;}
@@ -319,7 +322,7 @@ setupStory=async()=>{
   endActions.hidden=!(story.scene===8&&spreads[8].state.phase==='end'&&!turning);finish.hidden=!!ending;finish.disabled=spreads[8].state.time<4;reread.disabled=ending==='folding'||ending==='closing';
   if(ending==='closed')text($('story-hint'),'');
   if(turning)$('state-label').textContent=travel<.5?'페이지와 종이가 함께 접히는 중':'다음 페이지와 종이가 함께 펼쳐지는 중';
-  stage.dataset.phase=story.phase;stage.dataset.scene=String(story.scene);stage.dataset.walk=String(story.walk);stage.dataset.oceanVisible=String(openingRight.visible);stage.dataset.pageAngle=turn.rotation.z.toFixed(3);stage.dataset.pageTurning=String(turn.visible);stage.dataset.unfold=unfold.toFixed(3);stage.dataset.oceanFold=ocean.toFixed(3);stage.dataset.artOnLeaf=String(turning&&spreads[transition.low].R.parent===turn&&spreads[transition.high].L.parent===reverse);stage.dataset.armsDown=armsDown.toFixed(3);
+  stage.dataset.phase=story.phase;stage.dataset.scene=String(story.scene);stage.dataset.walk=String(story.walk);stage.dataset.heroScale=hero.scale.x.toFixed(3);stage.dataset.oceanVisible=String(openingRight.visible);stage.dataset.pageAngle=turn.rotation.z.toFixed(3);stage.dataset.pageTurning=String(turn.visible);stage.dataset.unfold=unfold.toFixed(3);stage.dataset.oceanFold=ocean.toFixed(3);stage.dataset.artOnLeaf=String(turning&&spreads[transition.low].R.parent===turn&&spreads[transition.high].L.parent===reverse);stage.dataset.armsDown=armsDown.toFixed(3);
   scene.updateMatrixWorld(true);project(cityLabel,gate,0,2.45,0);project(portLabel,harborBoat,0,1.65,0);project(speech,hero,.15,2.4,0);
  };
  if(new URLSearchParams(location.search).has('qa'))window.popupBook.qa={
