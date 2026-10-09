@@ -1,12 +1,12 @@
 const titles=['큰 물고기가 나타났어요','하나님, 제 기도를 들어주세요','다시 시작할 기회','니느웨 사람들이 달라졌어요','하나님은 모두를 아끼세요'];
-import {createScene4} from './scene4.js?v=e197b4c1a9fd';
-import {createScene5} from './scene5.js?v=e197b4c1a9fd';
-import {createScene6} from './scene6.js?v=e197b4c1a9fd';
-import {createScene7} from './scene7.js?v=e197b4c1a9fd';
-import {createScene8} from './scene8.js?v=e197b4c1a9fd';
+import {createScene4} from './scene4.js?v=0859e94a50ba';
+import {createScene5} from './scene5.js?v=0859e94a50ba';
+import {createScene6} from './scene6.js?v=0859e94a50ba';
+import {createScene7} from './scene7.js?v=0859e94a50ba';
+import {createScene8} from './scene8.js?v=0859e94a50ba';
 import * as THREE from './vendor/three.module.js';
-import {createStorm} from './scene3.js?v=e197b4c1a9fd';
-import {createVoyage} from './scene2.js?v=e197b4c1a9fd';
+import {createStorm} from './scene3.js?v=0859e94a50ba';
+import {createVoyage} from './scene2.js?v=0859e94a50ba';
 const stage=document.querySelector('#stage'),slider=document.querySelector('#progress');
 const scene=new THREE.Scene();
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
@@ -166,6 +166,14 @@ setupStory=async()=>{
  }
  roadHalf(-1,storyLeft);roadHalf(1,storyRight);wholeRoad.dispose();
  const harborRoute=new THREE.CubicBezierCurve3(new THREE.Vector3(.35,0,1.25),new THREE.Vector3(-.7,0,1.1),new THREE.Vector3(-1.85,0,.72),new THREE.Vector3(-2.1,0,-.1));
+ // Low paper garden in the foreground, leaving the fork and city readable.
+ function gardenCut(parent,pts,color,z=0){const shape=new THREE.Shape();pts.forEach(([x,y],n)=>n?shape.lineTo(x,y):shape.moveTo(x,y));shape.closePath();const mesh=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth:.025,bevelEnabled:false}),new THREE.MeshStandardMaterial({map:grain(color),roughness:1,side:THREE.DoubleSide}));mesh.position.z=z;mesh.castShadow=mesh.receiveShadow=true;parent.add(mesh);}
+ for(const [x,z,size] of [[2.1,2.15,.75],[3.55,2.15,.55]]){
+  const g=new THREE.Group();g.position.set(x,.09,z);g.scale.setScalar(size);storyRight.add(g);newPieces.push({pivot:g,direction:-1,delay:.4,parent:storyRight});
+  gardenCut(g,[[-.5,0],[-.57,.13],[-.36,.32],[-.07,.35],[.13,.17],[.12,0]],'#b9b39a');
+  gardenCut(g,[[.04,0],[.06,.19],[.25,.26],[.43,.13],[.46,0]],'#d3c9ab',.035);
+  for(let n=0;n<5;n++){const b=.25+n*.055,tip=b+(n-2)*.11,h=.38+(n%3)*.13;gardenCut(g,[[b,0],[tip-.06,h*.65],[tip,h],[tip+.035,h*.5],[b+.045,0]],n%2?'#78956d':'#567d61',.05+n*.006);}
+ }
  const hero=add('jonah',storyRight,{x:.35,z:1.25,w:1.2,h:2.15,direction:-1,delay:1.55,lift:.045});
  // Split the existing texture into articulated paper parts; no replacement face.
  const source=hero.children[0],baseGeo=source.geometry,uv=baseGeo.attributes.uv;
@@ -233,7 +241,7 @@ setupStory=async()=>{
   else if(story.scene===2){if(voyage.state.phase==='end')begin(3);else voyage.next();paused=false;buttonPause();}
   else if(story.phase==='arrived')begin(2);
   else if(story.phase==='narrate'){
-   story.narrative=story.narrative<4?4:story.narrative<10?10:13.5;
+   story.narrative=story.narrative<4?4:story.narrative<9?9:12.5;
    paused=false;buttonPause();
   }
  };
@@ -250,10 +258,10 @@ setupStory=async()=>{
    else if(story.scene===2){phase('voyage');}
    else if(story.scene===3){phase('storm');}
    else if(story.scene>=4){phase('chapter');}
-   else {story.unfold=1;if(back){story.walk=1;story.narrative=13.5;phase('arrived');say(lines[3]);}else phase('narrate');}
+   else {story.unfold=1;if(back){story.walk=1;story.narrative=12.5;phase('arrived');say(lines[3]);}else phase('narrate');}
   }
   if(story.phase==='reopen'&&progress>.999){story.unfold=1;phase('narrate');}
-  if(story.phase==='narrate'&&progress>.999){story.narrative+=dt;if(story.narrative>=13.5)phase('walk');}
+  if(story.phase==='narrate'&&progress>.999){story.narrative+=dt;if(story.narrative>=12.5)phase('walk');}
   if(story.phase==='walk'){story.walk=THREE.MathUtils.clamp((story.time-.65)/2.8,0,1);if(story.walk===1){phase('arrived');say(lines[3]);}}
   const returning=story.phase==='return-turn',turning=locked();
   const travel=turning?THREE.MathUtils.clamp(story.time/turnDuration,0,1):0;
@@ -274,7 +282,7 @@ setupStory=async()=>{
   chapters.forEach((c,i)=>c.update({dt,active:story.scene===i+4&&!turning&&!ending,unfold:weights[i+4]*3,progress,paused,project}));
   for(const it of newPieces){const a=smooth(.04,.94,unfold/3)*smooth(it.delay/8,.95,progress);it.pivot.rotation.x=it.direction*Math.PI/2*(1-a);}
   // Compress only the refusal beat from 5 seconds to 3.5; preserve all poses.
-  const t=story.narrative<=10?story.narrative:10+(story.narrative-10)*(5/3.5),walking=story.phase==='walk',atPort=story.walk===1;
+  const t=story.narrative<=4?story.narrative:story.narrative<=9?4+(story.narrative-4)*(6/5):10+(story.narrative-9)*(5/3.5),walking=story.phase==='walk',atPort=story.walk===1;
   const turnBody=t<4?smooth(0,3,t)*.17:t<10?.17:THREE.MathUtils.lerp(.17,-.42,smooth(11,14,t));
   const routeProgress=smooth(0,1,story.walk),routePoint=harborRoute.getPoint(routeProgress),routeTangent=harborRoute.getTangent(routeProgress);
   const harborHeading=Math.atan2(routeTangent.x,routeTangent.z);
