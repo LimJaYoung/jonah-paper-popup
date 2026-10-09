@@ -144,6 +144,10 @@ setupStory=async()=>{
   if(locked()||Math.abs(targetProgress-progress)>.001)return;
   if(progress<.999){targetProgress=1;replaying=false;paused=false;buttonPause();}
   else if(story.scene===0)begin();
+  else if(story.phase==='narrate'){
+   story.narrative=story.narrative<4?4:story.narrative<10?10:15;
+   paused=false;buttonPause();
+  }
  };
  $('replay').onclick=()=>{if(locked())return;targetProgress=0;replaying=true;paused=false;if(story.scene===1){resetAct();story.phase='reopen';}buttonPause()};
  $('pause').onclick=()=>{paused=!paused;buttonPause()};
@@ -198,11 +202,11 @@ setupStory=async()=>{
   $('story-nav').hidden=story.scene!==1;$('narration').hidden=!active||['reopen'].includes(story.phase);
   $('previous').disabled=locked()||progress<.999||Math.abs(targetProgress-progress)>.001;
   cityLabel.hidden=portLabel.hidden=!(active&&unfold>=2.8);speech.hidden=!(active&&t>=12&&!walking&&!atPort);
-  text($('story-hint'),atPort?'씬 1 끝 · 요나가 항구에 도착했어요':locked()?'종이 이야기가 펼쳐지고 있어요…':'');
+  text($('story-hint'),atPort?'마지막 장면 · 요나가 항구에 도착했어요':locked()?'종이 이야기가 펼쳐지고 있어요…':'');
   for(const id of ['replay','progress'])$(id).disabled=locked();
   const movingBook=Math.abs(targetProgress-progress)>.001;
-  text($('open'),locked()?'페이지 넘기는 중…':movingBook?(targetProgress>progress?'책 펼치는 중…':'책 닫는 중…'):progress<.999?'책 펼치기':story.scene===0?'다음페이지':atPort?'이야기 끝':walking?'항구로 걷는 중…':'이야기 재생 중…');
-  $('open').disabled=locked()||movingBook||(progress>.999&&story.scene===1);
+  $('open').title=progress<.999?'책 펼치기':story.scene===0?'다음 페이지':atPort?'마지막 장면입니다':walking?'요나가 항구로 걷고 있어요':'다음 이야기 구간';
+  $('open').disabled=locked()||movingBook||(progress>.999&&story.scene===1&&story.phase!=='narrate');
   text(document.querySelector('h1'),story.scene===0?'종이 사이로, 바다가 피어나다.':'요나야, 니느웨로 가렴');
   text(document.querySelector('.intro'),story.scene===0?'책을 펼치면 시작되는 작은 모험':'하나의 부름, 두 갈래의 길');
   text(document.querySelector('.chapter'),story.scene===0?'오프닝 표지':'본문 씬 1');text($('scene-name'),story.scene===0?'바다 위의 요나':'요나야, 니느웨로 가렴');
