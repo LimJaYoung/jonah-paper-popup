@@ -150,3 +150,9 @@ main{--book-height:clamp(330px,52vh,650px);--copy-height:124px;display:grid;grid
 }
 @media(max-width:600px){main{--copy-height:172px}}
 @media(max-width:360px){main{--copy-height:204px}}
+
+/* Keep the player 16px higher without changing any scene-dependent spacing. */
+main{grid-template-rows:140px var(--book-height) calc(var(--copy-height) - 16px) auto auto}
+footer.creator-credit{position:fixed;left:0;right:0;bottom:0;z-index:10;margin:0;padding:6px 0 8px;font:12px/1.5 'Pretendard',sans-serif;color:#54766f;background:linear-gradient(transparent,#f7f2e8 35%);pointer-events:none}
+body{padding-bottom:32px}
+@media(min-width:901px){footer.creator-credit{left:auto;right:20px;width:max-content;padding-inline:10px;border-radius:8px}}
