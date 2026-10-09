@@ -1,12 +1,12 @@
 const titles=['큰 물고기가 나타났어요','하나님, 제 기도를 들어주세요','다시 시작할 기회','니느웨 사람들이 달라졌어요','하나님은 모두를 아끼세요'];
-import {createScene4} from './scene4.js?v=5005e292ff77';
-import {createScene5} from './scene5.js?v=5005e292ff77';
-import {createScene6} from './scene6.js?v=5005e292ff77';
-import {createScene7} from './scene7.js?v=5005e292ff77';
-import {createScene8} from './scene8.js?v=5005e292ff77';
+import {createScene4} from './scene4.js?v=782c8c2c88e9';
+import {createScene5} from './scene5.js?v=782c8c2c88e9';
+import {createScene6} from './scene6.js?v=782c8c2c88e9';
+import {createScene7} from './scene7.js?v=782c8c2c88e9';
+import {createScene8} from './scene8.js?v=782c8c2c88e9';
 import * as THREE from './vendor/three.module.js';
-import {createStorm} from './scene3.js?v=5005e292ff77';
-import {createVoyage} from './scene2.js?v=5005e292ff77';
+import {createStorm} from './scene3.js?v=782c8c2c88e9';
+import {createVoyage} from './scene2.js?v=782c8c2c88e9';
 const stage=document.querySelector('#stage'),slider=document.querySelector('#progress');
 const scene=new THREE.Scene();
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
@@ -100,6 +100,9 @@ const openingPieces=[...pieces];
 const story={scene:0,phase:'idle',time:0,unfold:0,narrative:0,walk:0};
 let updateStory,setupStory;
 let progress=0,targetProgress=0,replaying=false,paused=false,last=performance.now(),swayTime=0;const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Shared timing for opening, closing, replay, and both page-turn directions.
+const bookMotionDuration=(reduce?.125:2.75)/2;
+const pageTurnDuration=3/2,endingFoldDuration=2/2;
 const smooth=(a,b,v)=>{const t=THREE.MathUtils.clamp((v-a)/(b-a),0,1);return t*t*(3-2*t)};
 function apply(p,time=0){whaleLeft.rotation.set(0,-Math.PI*(1-smooth(.12,.96,p)),0);leftHinge.rotation.z=-Math.PI*(1-p);updateCoverBinding(leftHinge.rotation.z);updatePageBinding(leftHinge.rotation.z);for(const it of openingPieces){const unfold=smooth(it.delay,.94,p);const sway=(reduce?0:Math.sin(time*.65+it.phase)*.012)*smooth(.94,1,p);it.pivot.rotation.x=it.direction*(Math.PI/2*(1-unfold)+sway);}
  slider.value=Math.round(p*1000);slider.style.setProperty('--fill',`${p*100}%`);document.querySelector('#percentage').value=`${Math.round(p*100)}%`;document.querySelector('#state-label').textContent=p<.001?'닫힌 책':p>.999?(['펼쳐진 바다','펼쳐진 마을','잔잔한 출항','거센 바람과 커다란 파도',...titles][story.scene]):'펼쳐지는 중';}
@@ -107,7 +110,7 @@ function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSiz
 function buttonPause(){document.querySelector('#pause').innerHTML=paused?'계속 재생 <span>▷</span>':'일시 정지 <span>Ⅱ</span>';document.querySelector('#pause').setAttribute('aria-label',paused?'움직임 계속 재생':'움직임 일시 정지');}
 // Story controller owns all inputs, including the original book controls.
 // initialization follows the story controller below
-function frame(now){const dt=Math.min((now-last)/1000,.05);last=now;if(!paused){swayTime+=dt;const diff=targetProgress-progress;progress+=Math.sign(diff)*Math.min(Math.abs(diff),dt/(reduce?.125:2.75));if(replaying&&progress===0){targetProgress=1;replaying=false}}apply(progress,swayTime);updateStory(paused?0:dt);renderer.render(scene,camera);requestAnimationFrame(frame)}// animation starts after scene assets load
+function frame(now){const dt=Math.min((now-last)/1000,.05);last=now;if(!paused){swayTime+=dt;const diff=targetProgress-progress;progress+=Math.sign(diff)*Math.min(Math.abs(diff),dt/bookMotionDuration);if(replaying&&progress===0){targetProgress=1;replaying=false}}apply(progress,swayTime);updateStory(paused?0:dt);renderer.render(scene,camera);requestAnimationFrame(frame)}// animation starts after scene assets load
 // Deterministic QA access: no camera controls in the public scene.
 window.popupBook={setProgress(p){progress=targetProgress=THREE.MathUtils.clamp(p,0,1);paused=true;replaying=false;buttonPause();apply(progress,0);renderer.render(scene,camera)},getState(){return {progress,paused,pieces:pieces.length,renderer:renderer.info.render}},audit(){scene.updateMatrixWorld(true);return pieces.map(it=>{const anchor=it.pivot.getWorldPosition(new THREE.Vector3());const local=it.parent.worldToLocal(anchor.clone());return {name:it.name,leaf:it.parent.name,anchor:[local.x,local.y,local.z],fold:it.pivot.rotation.x,closedFootprint:[it.min+it.pivot.position.x,it.max+it.pivot.position.x,it.pivot.position.z,it.pivot.position.z+it.direction*it.h]}})}};
 
@@ -206,7 +209,7 @@ setupStory=async()=>{
  finish.onclick=()=>{if(story.scene!==8||chapters[4].state.phase!=='end'||chapters[4].state.time<4||ending)return;ending='folding';story.time=0;paused=false;buttonPause();};
  reread.onclick=restart;
  const raycaster=new THREE.Raycaster();renderer.domElement.addEventListener('pointerup',event=>{if(locked()||ending||progress<.999||paused||story.scene<4)return;const rect=renderer.domElement.getBoundingClientRect();raycaster.setFromCamera(new THREE.Vector2((event.clientX-rect.left)/rect.width*2-1,1-(event.clientY-rect.top)/rect.height*2),camera);const chapter=spreads[story.scene],hit=raycaster.intersectObjects(chapter.targets,true)[0];if(hit)chapter.action(hit.object.userData.action);});
- const turnDuration=3;let transition;
+ const turnDuration=pageTurnDuration;let transition;
  function mountTurn(to){transition={from:story.scene,to,low:Math.min(story.scene,to),high:Math.max(story.scene,to)};turn.add(spreads[transition.low].R);reverse.add(spreads[transition.high].L);turn.visible=true;}
  function unmountTurn(){right.add(spreads[transition.low].R);left.add(spreads[transition.high].L);turn.visible=false;}
 
@@ -258,7 +261,7 @@ setupStory=async()=>{
   // meet at the vertical leaf. Fold amounts derive from that SAME page angle.
   const weights=Array(spreads.length).fill(0);weights[story.scene]=1;
   if(turning){weights.fill(0);weights[transition.low]=smooth(.52,1,1-angleFraction);weights[transition.high]=smooth(.52,1,angleFraction);turn.rotation.z=Math.PI*angleFraction;}
-  if(ending==='folding'){weights[8]=1-smooth(0,2,story.time);if(story.time>=2){ending='closing';targetProgress=0;}}
+  if(ending==='folding'){weights[8]=1-smooth(0,endingFoldDuration,story.time);if(story.time>=endingFoldDuration){ending='closing';targetProgress=0;}}
   if(ending==='closing'||ending==='closed'){weights[8]=0;if(progress===0)ending='closed';}
   const ocean=weights[0]*progress;
   if(turning){for(const it of openingPieces)it.pivot.rotation.x=it.direction*Math.PI/2*(1-smooth(it.delay,.94,ocean));whaleLeft.rotation.y=-Math.PI*(1-smooth(.12,.96,ocean));}
@@ -321,7 +324,7 @@ setupStory=async()=>{
  };
  if(new URLSearchParams(location.search).has('qa'))window.popupBook.qa={
   state:()=>({scene:story.scene,phase:story.phase,ending,chapter:spreads[story.scene].state?{...spreads[story.scene].state}:null}),
-  tick(seconds){for(let t=0;t<seconds;t+=.05){if(!paused){const d=targetProgress-progress;progress+=Math.sign(d)*Math.min(Math.abs(d),.05/2.75);}apply(progress,swayTime);updateStory(paused?0:.05);}renderer.render(scene,camera);},
+  tick(seconds){for(let t=0;t<seconds;t+=.05){if(!paused){const d=targetProgress-progress;progress+=Math.sign(d)*Math.min(Math.abs(d),.05/bookMotionDuration);}apply(progress,swayTime);updateStory(paused?0:.05);}renderer.render(scene,camera);},
   action(key){spreads[story.scene].action?.(key);},
   inspect:()=>({pageAttached:stage.dataset.artOnLeaf,weights:spreads.map(s=>[s.L.visible,s.R.visible]),errors:[]})
  };
