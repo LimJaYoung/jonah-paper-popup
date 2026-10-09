@@ -53,6 +53,6 @@ export function controller(steps,animate,kit,{onAction}={}){
  function canNext(){return state.phase==='end'||steps[state.index][1]===Infinity&&state.time>=2;}
  function next(){if(state.phase!=='end'&&canNext())advance();}
  function action(key){if(onAction)onAction(key,{state,extras,next,advance});}
- function update({dt,active,unfold,progress,paused}){const open=kit.smooth(0,3,unfold)*kit.smooth(.35,1,progress);if(active&&progress>.999&&!paused){state.time+=dt;state.clock+=dt;if(state.time>=steps[state.index][1])advance();}kit.fold(open);animate({state,extras,open,active,dt:active&&!paused?dt:0});}
+ function update({dt,active,unfold,progress,paused}){const open=kit.smooth(.04,.94,unfold/3)*kit.smooth(.35,1,progress);if(active&&progress>.999&&!paused){state.time+=dt;state.clock+=dt;if(state.time>=steps[state.index][1])advance();}kit.fold(open);animate({state,extras,open,active,dt:active&&!paused?dt:0});}
  return {L:kit.L,R:kit.R,state,extras,targets:kit.targets,reset,update,next,canNext,action,caption:()=>steps[state.index][2],hint:()=>steps[state.index][3]|| (state.phase==='end'?'다음 페이지로 이어가요.':''),steps};
 }

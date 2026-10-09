@@ -1,12 +1,12 @@
 const titles=['큰 물고기가 나타났어요','하나님, 제 기도를 들어주세요','다시 시작할 기회','니느웨 사람들이 달라졌어요','하나님은 모두를 아끼세요'];
-import {createScene4} from './scene4.js?v=7698611052b4';
-import {createScene5} from './scene5.js?v=7698611052b4';
-import {createScene6} from './scene6.js?v=7698611052b4';
-import {createScene7} from './scene7.js?v=7698611052b4';
-import {createScene8} from './scene8.js?v=7698611052b4';
+import {createScene4} from './scene4.js?v=8317f2d73e03';
+import {createScene5} from './scene5.js?v=8317f2d73e03';
+import {createScene6} from './scene6.js?v=8317f2d73e03';
+import {createScene7} from './scene7.js?v=8317f2d73e03';
+import {createScene8} from './scene8.js?v=8317f2d73e03';
 import * as THREE from './vendor/three.module.js';
-import {createStorm} from './scene3.js?v=7698611052b4';
-import {createVoyage} from './scene2.js?v=7698611052b4';
+import {createStorm} from './scene3.js?v=8317f2d73e03';
+import {createVoyage} from './scene2.js?v=8317f2d73e03';
 const stage=document.querySelector('#stage'),slider=document.querySelector('#progress');
 const scene=new THREE.Scene();
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
@@ -102,7 +102,8 @@ let updateStory,setupStory;
 let progress=0,targetProgress=0,replaying=false,paused=false,last=performance.now(),swayTime=0;const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 // Shared timing for opening, closing, replay, and both page-turn directions.
 const bookMotionDuration=(reduce?.125:2.75)/2;
-const pageTurnDuration=3/2,endingFoldDuration=2/2;
+// Each half-turn gets the same time as the initial book opening.
+const pageTurnDuration=bookMotionDuration*2,endingFoldDuration=bookMotionDuration;
 const smooth=(a,b,v)=>{const t=THREE.MathUtils.clamp((v-a)/(b-a),0,1);return t*t*(3-2*t)};
 function apply(p,time=0){whaleLeft.rotation.set(0,-Math.PI*(1-smooth(.12,.96,p)),0);leftHinge.rotation.z=-Math.PI*(1-p);updateCoverBinding(leftHinge.rotation.z);updatePageBinding(leftHinge.rotation.z);for(const it of openingPieces){const unfold=smooth(it.delay,.94,p);const sway=(reduce?0:Math.sin(time*.65+it.phase)*.012)*smooth(.94,1,p);it.pivot.rotation.x=it.direction*(Math.PI/2*(1-unfold)+sway);}
  slider.value=Math.round(p*1000);slider.style.setProperty('--fill',`${p*100}%`);document.querySelector('#percentage').value=`${Math.round(p*100)}%`;document.querySelector('#state-label').textContent=p<.001?'닫힌 책':p>.999?(['펼쳐진 바다','펼쳐진 마을','잔잔한 출항','거센 바람과 커다란 파도',...titles][story.scene]):'펼쳐지는 중';}
@@ -255,12 +256,12 @@ setupStory=async()=>{
   if(story.phase==='narrate'&&progress>.999){story.narrative+=dt;if(story.narrative>=15)phase('walk');}
   if(story.phase==='walk'){story.walk=THREE.MathUtils.clamp((story.time-.65)/2.8,0,1);if(story.walk===1){phase('arrived');say(lines[3]);}}
   const returning=story.phase==='return-turn',turning=locked();
-  const travel=turning?smooth(0,turnDuration,story.time):0;
+  const travel=turning?THREE.MathUtils.clamp(story.time/turnDuration,0,1):0;
   const angleFraction=returning?1-travel:travel;
   // One continuous motion: closing the old spread and opening the new spread
   // meet at the vertical leaf. Fold amounts derive from that SAME page angle.
   const weights=Array(spreads.length).fill(0);weights[story.scene]=1;
-  if(turning){weights.fill(0);weights[transition.low]=smooth(.52,1,1-angleFraction);weights[transition.high]=smooth(.52,1,angleFraction);turn.rotation.z=Math.PI*angleFraction;}
+  if(turning){weights.fill(0);weights[transition.low]=THREE.MathUtils.clamp(1-angleFraction*2,0,1);weights[transition.high]=THREE.MathUtils.clamp(angleFraction*2-1,0,1);turn.rotation.z=Math.PI*angleFraction;}
   if(ending==='folding'){weights[8]=1-smooth(0,endingFoldDuration,story.time);if(story.time>=endingFoldDuration){ending='closing';targetProgress=0;}}
   if(ending==='closing'||ending==='closed'){weights[8]=0;if(progress===0)ending='closed';}
   const ocean=weights[0]*progress;
@@ -271,7 +272,7 @@ setupStory=async()=>{
   voyage.update({dt,active:story.scene===2&&!turning,unfold:weights[2]*3,progress,paused,project});
   storm.update({dt,active:story.scene===3&&!turning,unfold:weights[3]*3,progress,paused,project});
   chapters.forEach((c,i)=>c.update({dt,active:story.scene===i+4&&!turning&&!ending,unfold:weights[i+4]*3,progress,paused,project}));
-  for(const it of newPieces){const a=smooth(it.delay,it.delay+1,unfold)*smooth(it.delay/8,.95,progress);it.pivot.rotation.x=it.direction*Math.PI/2*(1-a);}
+  for(const it of newPieces){const a=smooth(.04,.94,unfold/3)*smooth(it.delay/8,.95,progress);it.pivot.rotation.x=it.direction*Math.PI/2*(1-a);}
   const t=story.narrative,walking=story.phase==='walk',atPort=story.walk===1;
   const turnBody=t<4?smooth(0,3,t)*.17:t<10?.17:THREE.MathUtils.lerp(.17,-.42,smooth(11,14,t));
   const routeProgress=smooth(0,1,story.walk),routePoint=harborRoute.getPoint(routeProgress),routeTangent=harborRoute.getTangent(routeProgress);

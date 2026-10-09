@@ -1,4 +1,4 @@
-import {createVessel} from './vessel.js?v=7698611052b4';
+import {createVessel} from './vessel.js?v=8317f2d73e03';
 import * as THREE from './vendor/three.module.js';
 
 // Uses the same paper renderer, actor artwork and page-local coordinate system.
@@ -64,15 +64,15 @@ export function createVoyage({left,right,paper,pieces,assets,cream,grain,box,act
    if(state.phase==='sleep'&&state.time>=2)setPhase('end');
   }
   const openness=smooth(0,3,unfold)*smooth(.35,1,progress),motion=openness*(active?1:0);
-  for(const p of folds)p.pivot.rotation.x=p.direction*Math.PI/2*(1-smooth(p.delay,p.delay+1,unfold)*smooth(p.delay/8,.95,progress));
+  for(const p of folds)p.pivot.rotation.x=p.direction*Math.PI/2*(1-smooth(.04,.94,unfold/3)*smooth(p.delay/8,.95,progress));
   waves.forEach(({p,layer})=>p.rotation.x+=Math.sin(state.clock*.7+layer*1.4)*.012*motion);
-  dock.rotation.x=-.13*(1-smooth(.45,1.4,unfold));
+  dock.rotation.x=-.13*(1-smooth(.04,.94,unfold/3));
   const onboard=state.board>=1;
   if(!onboard){
    // The hinge remains page attached until Jonah actually reaches the deck.
    const p=state.board;heroHinge.position.set(THREE.MathUtils.lerp(-1,1.4,p),THREE.MathUtils.lerp(.62,.74,p),THREE.MathUtils.lerp(.85,.81,p));
    const host=heroHinge.position.x<0?L:R;if(heroHinge.parent!==host)host.add(heroHinge);
-   heroHinge.rotation.x=-Math.PI/2*(1-smooth(1.65,2.65,unfold)*smooth(.3,1,progress));
+   heroHinge.rotation.x=-Math.PI/2*(1-smooth(.04,.94,unfold/3)*smooth(.3,1,progress));
   }else{heroHinge.rotation.x=0;heroHinge.position.set(0,.62,.16);}
   ship.position.x=1.4+state.travel*1.45; // 15.6% of the 9.3-unit spread; hull edge <=4.38.
   ship.position.y=onboard&&state.travel>0?Math.sin(state.clock*.8)*.025*motion:0;
@@ -84,7 +84,7 @@ export function createVoyage({left,right,paper,pieces,assets,cream,grain,box,act
   pose(jonah,stride);jonah.body.rotation.set(0,walking?.55:.35,walking?stride*.025:0);
   // Sailors fold at their feet as part of the vessel and remain on its deck.
   for(const [i,a] of [sailorA,sailorB].entries()){
-   a.root.rotation.x=-Math.PI/2*(1-smooth(1.65+i*.1,2.7,unfold)*smooth(.4,1,progress));
+   a.root.rotation.x=-Math.PI/2*(1-smooth(.04,.94,unfold/3)*smooth(.4,1,progress));
    pose(a,0,i===0&&['intro','ready','retract'].includes(state.phase)?1.65+Math.sin(state.clock*2)*.16:0);
    a.head.rotation.z=Math.sin(state.clock*.65+i)*.04*motion;
    a.body.rotation.y=i===0?-.18:.16+Math.sin(state.clock*.5)*.04*motion;

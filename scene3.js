@@ -1,5 +1,5 @@
 import * as THREE from './vendor/three.module.js';
-import {createVessel} from './vessel.js?v=7698611052b4';
+import {createVessel} from './vessel.js?v=8317f2d73e03';
 
 export function createStorm({left,right,paper,pieces,assets,cream,grain,box,actorTemplate,stage,smooth}){
  const L=new THREE.Group(),R=new THREE.Group();left.add(L);right.add(R);
@@ -45,7 +45,7 @@ export function createStorm({left,right,paper,pieces,assets,cream,grain,box,acto
  function pose(a){a.root.rotation.set(0,0,0);a.body.rotation.set(0,0,0);a.head.rotation.set(0,0,0);a.armL.rotation.set(0,0,2.55);a.armR.rotation.set(0,0,-2.55);a.footL.rotation.set(0,0,0);a.footR.rotation.set(0,0,0);}
  function update({dt,active,unfold,progress,paused,project}){
   if(active&&progress>.999&&!paused){state.time+=dt;state.clock+=dt;if(state.time>=steps[state.index][1])advance();}
-  const {index:i,time:t,clock:c}=state,open=smooth(0,3,unfold)*smooth(.35,1,progress);
+  const {index:i,time:t,clock:c}=state,open=smooth(.04,.94,unfold/3)*smooth(.35,1,progress);
   const settled=i===5?smooth(8,10,t):i>=6?1:0;
   const intensity=i===0?smooth(1,4,t):i===3?.5:1;
   const strength=intensity*(1-settled),amplitude=(.14*strength+.004*settled)*open;
