@@ -116,3 +116,11 @@ footer.creator-credit{justify-content:center;font:12px/1.5 'Pretendard',sans-ser
  #story-ui{grid-template-rows:128px 36px;row-gap:8px;height:172px;min-height:172px;margin:0 auto 16px}
 }
 @media(max-width:360px){#story-ui{grid-template-rows:160px 36px;height:204px;min-height:204px}}
+
+/* Stage overlays never participate in the narration/player layout. */
+.voyage-callout{position:absolute;z-index:5;width:204px;padding:10px 15px;border:1px solid #d6b66f;border-radius:18px;background:#fffaf0;color:#416969;text-align:center;font:400 14px/1.55 'Pretendard',sans-serif;pointer-events:none;box-shadow:0 3px 10px #8068310c}
+.voyage-callout svg{position:absolute;left:0;top:0;width:100vw;height:100%;overflow:visible;pointer-events:none}
+.voyage-callout path{fill:none;stroke:#b3924e;stroke-width:1.6;stroke-dasharray:4 5;stroke-linecap:round;stroke-linejoin:round}
+.voyage-callout .arrow-tip{stroke-dasharray:none}
+#voyage-boat{border-color:transparent}
+@media(max-width:600px){.voyage-callout{width:174px;padding:8px 10px;font-size:12px;border-radius:15px}}

@@ -1,4 +1,4 @@
-import {createVessel} from './vessel.js?v=385c95c03212';
+import {createVessel} from './vessel.js?v=bf748fbd6c65';
 import * as THREE from './vendor/three.module.js';
 
 // Uses the same paper renderer, actor artwork and page-local coordinate system.
@@ -34,6 +34,9 @@ export function createVoyage({left,right,paper,pieces,assets,cream,grain,box,act
  const jonah=actor(heroHinge,.58); // original face, clothing, rear and shoulder hinges
  const sleep=document.createElement('div');sleep.className='scene-label';sleep.textContent='쿨…';sleep.hidden=true;stage.appendChild(sleep);
  const hit=document.createElement('button');hit.id='voyage-boat';hit.className='boat-target';hit.setAttribute('aria-label','배를 눌러 요나 승선');hit.title='배를 눌러 요나의 여행을 이어가 보세요.';hit.hidden=true;stage.appendChild(hit);
+ const callout=document.createElement('div');callout.className='voyage-callout';callout.hidden=true;
+ callout.innerHTML='<span>배를 눌러 요나의 여행을<br>이어가 보세요.</span><svg viewBox="0 0 120 80" aria-hidden="true"><path d="M105 4 Q100 45 18 65"/><path class="arrow-tip" d="m25 54-10 12 16 3"/></svg>';
+ stage.appendChild(callout);
  const lines=[
   '요나는 항구에서 다시스로 가는 배를 찾았어요. 니느웨와는 반대쪽으로 가는 배였지요.',
   '요나는 뱃삯을 내고 배에 올랐어요. 하나님을 피해 멀리 떠나려 했어요.',
@@ -43,7 +46,7 @@ export function createVoyage({left,right,paper,pieces,assets,cream,grain,box,act
  ];
  const state={phase:'intro',time:0,travel:0,board:0,cabin:0,clock:0};
  function setPhase(p){state.phase=p;state.time=0;}
- function reset(){Object.assign(state,{phase:'intro',time:0,travel:0,board:0,cabin:0,clock:0});L.add(heroHinge);heroHinge.position.set(-1,.62,.85);heroHinge.rotation.set(0,0,0);ship.position.set(1.4,0,.65);ship.rotation.set(0,0,0);plank.rotation.set(0,0,0);cover.rotation.y=0;jonah.root.position.set(0,0,0);jonah.body.rotation.set(0,.45,0);sleep.hidden=hit.hidden=true;}
+ function reset(){Object.assign(state,{phase:'intro',time:0,travel:0,board:0,cabin:0,clock:0});L.add(heroHinge);heroHinge.position.set(-1,.62,.85);heroHinge.rotation.set(0,0,0);ship.position.set(1.4,0,.65);ship.rotation.set(0,0,0);plank.rotation.set(0,0,0);cover.rotation.y=0;jonah.root.position.set(0,0,0);jonah.body.rotation.set(0,.45,0);sleep.hidden=hit.hidden=callout.hidden=true;}
  function board(){if(state.phase!=='ready')return;setPhase('boarding');}
  hit.onclick=board;
  function next(){if(state.phase==='intro'){setPhase('ready');return;}board();}
@@ -103,10 +106,24 @@ export function createVoyage({left,right,paper,pieces,assets,cream,grain,box,act
   sleep.hidden=!(active&&['sleep','end'].includes(state.phase)&&progress>.999);
   hit.hidden=!(active&&state.phase==='ready'&&progress>.999);hit.disabled=paused;
   project(hit,boat,0,1.1,.1);project(sleep,cabin,0,1.2,.15);
+  callout.hidden=hit.hidden;
+  if(!callout.hidden){
+   const boatX=parseFloat(hit.style.left),boatY=parseFloat(hit.style.top);
+   const x=Math.max(12,Math.min(stage.clientWidth-callout.offsetWidth-12,boatX+25));
+   const y=Math.max(8,boatY-callout.offsetHeight-65);
+   callout.style.left=`${x}px`;callout.style.top=`${y}px`;
+   const svg=callout.querySelector('svg'),startX=callout.offsetWidth*.55,startY=callout.offsetHeight;
+   const endX=boatX-x,endY=boatY-y-25;
+   svg.setAttribute('viewBox',`${-x} ${-y} ${stage.clientWidth} ${stage.clientHeight}`);
+   svg.style.left=`${-x}px`;svg.style.top=`${-y}px`;
+   svg.style.width=`${stage.clientWidth}px`;svg.style.height=`${stage.clientHeight}px`;
+   svg.querySelector('path').setAttribute('d',`M${startX} ${startY+4} Q${startX} ${endY-20} ${endX} ${endY}`);
+   svg.querySelector('.arrow-tip').setAttribute('d',`M${endX-5} ${endY-11} L${endX} ${endY} L${endX+12} ${endY-3}`);
+  }
   // Diagnostics read by browser QA; scene logic has no timer outside this update.
   stage.dataset.voyagePhase=state.phase;stage.dataset.shipX=ship.position.x.toFixed(3);stage.dataset.boarded=String(onboard);stage.dataset.onShip=String(heroHinge.parent===boat);stage.dataset.cabinProgress=state.cabin.toFixed(3);
  }
  function caption(){return ['intro','ready'].includes(state.phase)?lines[0]:['boarding','paid','retract'].includes(state.phase)?lines[1]:state.phase==='sailing'?lines[2]:state.phase==='end'?lines[4]:lines[3];}
- function hint(){return state.phase==='ready'?'배를 눌러 요나의 여행을 이어가 보세요.':state.phase==='end'?'다음 이야기는 폭풍 장면이에요.':' '}
- reset();return {L,R,state,reset,next,update,caption,hint,hideUI(){sleep.hidden=hit.hidden=true;},canNext(){return ['intro','ready','end'].includes(state.phase);}};
+ function hint(){return state.phase==='end'?'다음 이야기는 폭풍 장면이에요.':' '}
+ reset();return {L,R,state,reset,next,update,caption,hint,hideUI(){sleep.hidden=hit.hidden=callout.hidden=true;},canNext(){return ['intro','ready','end'].includes(state.phase);}};
 }
