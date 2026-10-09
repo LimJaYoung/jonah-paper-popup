@@ -124,3 +124,16 @@ footer.creator-credit{justify-content:center;font:12px/1.5 'Pretendard',sans-ser
 .voyage-callout .arrow-tip{stroke-dasharray:none}
 #voyage-boat{border-color:transparent}
 @media(max-width:600px){.voyage-callout{width:174px;padding:8px 10px;font-size:12px;border-radius:15px}}
+
+/* One shared layout owns the player position; story text cannot size its row. */
+html{scrollbar-gutter:stable}
+body{overflow-anchor:none}
+main{--book-height:clamp(330px,52vh,650px);--copy-height:124px;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:140px var(--book-height) var(--copy-height) auto auto;row-gap:0}
+.heading{grid-row:1;min-width:0}
+#stage{grid-row:2;height:var(--book-height);margin:0;min-width:0}
+#story-ui{grid-row:3;width:100%;height:var(--copy-height);min-height:0;margin:0 auto;padding-top:0;position:relative;contain:size layout}
+.controls{grid-row:4;align-self:start;position:relative;z-index:6}
+#end-actions{grid-row:5}
+@media(min-width:601px) and (max-width:900px){main{--copy-height:160px}}
+@media(max-width:600px){main{--book-height:clamp(250px,64vw,280px);--copy-height:188px}#story-ui{height:var(--copy-height);min-height:0;margin:0 auto}}
+@media(max-width:360px){main{--copy-height:220px}}
