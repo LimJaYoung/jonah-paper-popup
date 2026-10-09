@@ -35,7 +35,7 @@ h1{font-weight:400;letter-spacing:-.025em}#narration{line-height:1.65}
 
 /* Quiet supporting copy and a compact, tactile playback panel. */
 @font-face{font-family:'Pretendard';src:url('./assets/fonts/PretendardVariable.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
-.eyebrow,.intro{font-family:'Pretendard',sans-serif}
+.eyebrow,.intro,#loading{font-family:'Pretendard',sans-serif}
 .eyebrow{font-weight:600;letter-spacing:.12em}
 .intro{font-weight:400;color:#78847b}
 /* Reference artwork: paper bookmarks and a cream-and-gold player. */
