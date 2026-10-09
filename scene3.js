@@ -1,5 +1,5 @@
 import * as THREE from './vendor/three.module.js';
-import {createVessel} from './vessel.js?v=03ea652159c2';
+import {createVessel} from './vessel.js?v=8565e524cc1e';
 
 export function createStorm({left,right,paper,pieces,assets,cream,grain,box,actorTemplate,stage,smooth}){
  const L=new THREE.Group(),R=new THREE.Group();left.add(L);right.add(R);
@@ -52,8 +52,8 @@ export function createStorm({left,right,paper,pieces,assets,cream,grain,box,acto
  const state={index:0,time:0,clock:0,phase:'wind'};
  function reset(){Object.assign(state,{index:0,time:0,clock:0,phase:'wind'});dialogue.hidden=sleep.hidden=true;prayingSailors.forEach(p=>p.visible=false);sailorA.root.visible=sailorB.root.visible=true;}
  function advance(){if(state.index<steps.length-1){state.index++;state.time=0;state.phase=steps[state.index][0];}}
- // Keep full reading and action time; next can advance only after that beat is ready.
- function canNext(){return state.index<8&&state.time>=steps[state.index][1]-2;}
+ // Unlock as soon as each foreground action finishes; ambient motion may continue.
+ function canNext(){return state.index<8&&state.time>=[2,7,9,1.5,4.5,8,3,.6][state.index];}
  function next(){if(canNext())advance();}
  function pose(a){a.root.rotation.set(0,0,0);a.body.rotation.set(0,0,0);a.head.rotation.set(0,0,0);a.armL.rotation.set(0,0,2.55);a.armR.rotation.set(0,0,-2.55);a.footL.rotation.set(0,0,0);a.footR.rotation.set(0,0,0);}
  function update({dt,active,unfold,progress,paused,project}){

@@ -1,4 +1,4 @@
-import {createVessel} from './vessel.js?v=03ea652159c2';
+import {createVessel} from './vessel.js?v=8565e524cc1e';
 import * as THREE from './vendor/three.module.js';
 
 // Uses the same paper renderer, actor artwork and page-local coordinate system.
@@ -64,7 +64,7 @@ export function createVoyage({left,right,paper,pieces,assets,cream,grain,box,act
    if(state.phase==='sailing'){state.travel=smooth(0,6,state.time);if(state.time>=6)setPhase('look');}
    if(state.phase==='look'&&state.time>=1.6)setPhase('cabin');
    if(state.phase==='cabin'){state.cabin=smooth(0,4,state.time);if(state.time>=4)setPhase('sleep');}
-   if(state.phase==='sleep'&&state.time>=2)setPhase('end');
+   if(state.phase==='sleep'&&state.time>=.6)setPhase('end');
   }
   const openness=smooth(0,3,unfold)*smooth(.35,1,progress),motion=openness*(active?1:0);
   for(const p of folds)p.pivot.rotation.x=p.direction*Math.PI/2*(1-smooth(.04,.94,unfold/3)*smooth(p.delay/8,.95,progress));

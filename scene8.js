@@ -1,4 +1,4 @@
-import {createKit,controller} from './story-kit.js?v=03ea652159c2';
+import {createKit,controller} from './story-kit.js?v=8565e524cc1e';
 import * as THREE from './vendor/three.module.js';
 export function createScene8(ctx){const k=createKit(ctx),{L,R,mat,hinge,cut,oval,smooth}=k;
  k.city(R,2.5,-2.45,.7);const folk=[1.7,2.4,3.1].map((x,i)=>k.actor(R,x,-1.1,i===1?.25:.34,'sailor',0xf0d2a3));
@@ -16,5 +16,5 @@ export function createScene8(ctx){const k=createKit(ctx),{L,R,mat,hinge,cut,oval
  leaves.forEach(({g,m},n)=>{g.rotation.z=(n%2?-.2:.2)+(1-smooth(n*.55,n*.55+2,i===1?t:10))*1.5+wither*1.35+(e.sway>0?.08*Math.sin(e.sway*6):0);g.rotation.x=-.45*(1-wither);m.color.setRGB(1+.9*wither,1+.15*wither,1-.5*wither);});
  animals.forEach((animal,n)=>animal.rotation.z=.018*Math.sin(s.clock*.7+n));
  folk.forEach((c,n)=>{k.pose(c);c.head.rotation.z=Math.sin(s.clock*.8+n)*.025;});light.intensity=active?(i>=4&&i<6?3.2:2)*open:0;
- },k,{onAction(key,{state,extras}){if(key==='leaf'&&state.index>=1&&state.index<=2&&!extras.sway)extras.sway=1.5;}});
+ },k,{readyAfter:{grow:4.2,wither:7,question2:5},onAction(key,{state,extras}){if(key==='leaf'&&state.index>=1&&state.index<=2&&!extras.sway)extras.sway=1.5;}});
 }

@@ -1,4 +1,4 @@
-import {createKit,controller} from './story-kit.js?v=03ea652159c2';
+import {createKit,controller} from './story-kit.js?v=8565e524cc1e';
 import * as THREE from './vendor/three.module.js';
 export function createScene6(ctx){const k=createKit(ctx),{L,R,mat,hinge,smooth}=k;
  for(let n=0;n<2;n++)k.add('waves',L,{x:-2.2,z:n?1.7:-1.9,w:4.2,h:n?.7:1.2,direction:n?-1:1});
@@ -13,5 +13,5 @@ export function createScene6(ctx){const k=createKit(ctx),{L,R,mat,hinge,smooth}=
  if(i>=2)a.head.rotation.x=.12*Math.sin(Math.min(t,3)*3)*(1-smooth(2,4,t));
  if(i>=4){const w=i===4?smooth(0,6,t):1;a.root.position.set(.7+2.1*w,.09,.9-2.45*w);a.rig.rotation.y=-.45;a.legs.forEach(({thigh},n)=>thigh.rotation.x=Math.sin(t*8+n*Math.PI)*.2*(w<1?1:0));a.armL.rotation.x=.12*Math.sin(t*8)*(w<1?1:0);}
  light.intensity=active&&i>=2?2*open:0;
- },k,{onAction(key,{state,next}){if(key==='path'&&state.phase==='invite')next();}});
+ },k,{readyAfter:{arrive:6,stand:7,call:4,invite:.3,walk:6},onAction(key,{state,next}){if(key==='path'&&state.phase==='invite')next();}});
 }

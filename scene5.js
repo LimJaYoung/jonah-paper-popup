@@ -1,4 +1,4 @@
-import {createKit,controller} from './story-kit.js?v=03ea652159c2';
+import {createKit,controller} from './story-kit.js?v=8565e524cc1e';
 import * as THREE from './vendor/three.module.js';
 export function createScene5(ctx){const k=createKit(ctx),{L,R,hinge,mat,cut,smooth}=k;
  // Nested arch silhouettes have open centers, like a layered paper theatre.
@@ -12,5 +12,5 @@ export function createScene5(ctx){const k=createKit(ctx),{L,R,hinge,mat,cut,smoo
  if(i===3){kneel=smooth(1,3,t);bow=1.35*smooth(3,6,t);arms=2.55*smooth(0,2,t)*(1-smooth(3,6,t));}
  if(i>=4){bow=1.35*(1-smooth(0,3,i===4?t:8));arms=1.7*smooth(0,3,i===4?t:8);}
  k.pose(a,{kneel,bow,arms});const reach=i===3?smooth(3,6,t):i===4?1-smooth(0,3,t):0;a.armL.rotation.x=a.armR.rotation.x=.95*reach;light.intensity=active?(1.4+(i>=4?smooth(0,4,t):0))*open:0;
- },k,{onAction(key,{state,next}){if(key!=='prayer')return;if(state.phase==='invite')next();else if(state.phase==='end'){state.index=2;state.phase='raise';state.time=0;}}});
+ },k,{readyAfter:{raise:3.5,bow:6,thanks:4,invite:.3},onAction(key,{state,next}){if(key!=='prayer')return;if(state.phase==='invite')next();else if(state.phase==='end'){state.index=2;state.phase='raise';state.time=0;}}});
 }

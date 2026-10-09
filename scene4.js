@@ -1,4 +1,4 @@
-import {createKit,controller} from './story-kit.js?v=03ea652159c2';
+import {createKit,controller} from './story-kit.js?v=8565e524cc1e';
 export function createScene4(ctx){const k=createKit(ctx),{L,R,mat,hinge,oval,smooth}=k;k.waves();
  // Three paper-cut seaweed silhouettes, rooted on their own page hinges.
  const seaweed=[];
@@ -36,5 +36,5 @@ export function createScene4(ctx){const k=createKit(ctx),{L,R,mat,hinge,oval,smo
  f.mouth.visible=Math.abs(f.jaw.rotation.z)>.05;
  if(i===2){a.root.position.x=-1.5+1.6*swallow;a.root.position.z=1.1-2.25*swallow;a.root.visible=swallow<.9;f.rig.rotation.z=.035*Math.sin(Math.PI*smooth(5,6,t));}else f.rig.rotation.z=0;
  bubbles.forEach((b,n)=>{b.visible=i<2;b.position.y=.3+((s.clock*.25+n*.35)%1.8);});sun.visible=i===3&&Math.floor(t/1.5)%2===0;moon.visible=i===3&&!sun.visible;
- },k);
+ },k,{readyAfter:{sink:4,approach:5,swallow:6,days:4.5,remember:.6}});
 }

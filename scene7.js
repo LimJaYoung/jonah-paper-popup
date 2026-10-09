@@ -1,4 +1,4 @@
-import {createKit,controller} from './story-kit.js?v=03ea652159c2';
+import {createKit,controller} from './story-kit.js?v=8565e524cc1e';
 import * as THREE from './vendor/three.module.js';
 export function createScene7(ctx){const k=createKit(ctx),{L,R,mat,hinge,smooth}=k;
  k.city(R,2.15,-2.5,1.08);k.add('houses',L,{x:-2.15,z:-2.2,w:3.9,h:2.6,direction:1});k.add('houses',L,{x:-2.6,z:-.6,w:2.6,h:1.45,direction:1});
@@ -16,5 +16,5 @@ export function createScene7(ctx){const k=createKit(ctx),{L,R,mat,hinge,smooth}=
  if(show){if(!e.replay||e.replay==='reconcile')citizens.slice(0,2).forEach((c,n)=>{c.rig.rotation.y=n?-.25:.25;c.body.rotation.x=.24*Math.sin(Math.PI*smooth(0,4,actionTime));c.armL.rotation.z=2.1;c.armR.rotation.z=-2.1;});}
  const hand=show&&(!e.replay||e.replay==='return')?smooth(3,6,actionTime):i>=5?1:0;gift.position.set(2.1+1.05*hand,.65,1.65);if(show&&hand>0&&hand<1){citizens[2].armR.rotation.z=-1.5;citizens[3].armL.rotation.z=1.5;}
  light.intensity=active&&i>=5?3*open:0;
- },k,{onAction(key,{state,extras}){if(state.phase==='end'&&!extras.replay&&['reconcile','return'].includes(key)){extras.replay=key;extras.time=0;}}});
+ },k,{readyAfter:{repent:3,change:6},onAction(key,{state,extras}){if(state.phase==='end'&&!extras.replay&&['reconcile','return'].includes(key)){extras.replay=key;extras.time=0;}}});
 }

@@ -46,11 +46,11 @@ export function createKit(ctx){
  function fold(amount){foldAmount=amount;for(const f of folds)f.pivot.rotation.x=f.direction*Math.PI/2*(1-amount);}
  return {...ctx,L,R,folds,actors,targets,mat,add,hinge,cut,oval,actor,pose,fish,waves,city,hotspot,fold};
 }
-export function controller(steps,animate,kit,{onAction}={}){
+export function controller(steps,animate,kit,{onAction,readyAfter={}}={}){
  const state={index:0,time:0,clock:0,phase:steps[0][0],replaying:false},extras={};
  function reset(){Object.assign(state,{index:0,time:0,clock:0,phase:steps[0][0],replaying:false});for(const k of Object.keys(extras))delete extras[k];}
  function advance(){if(state.index<steps.length-1){state.index++;state.time=0;state.phase=steps[state.index][0];}}
- function canNext(){return state.phase==='end'||steps[state.index][1]===Infinity&&state.time>=2;}
+ function canNext(){return state.phase==='end'||state.time>=(readyAfter[state.phase]??1.2);}
  function next(){if(state.phase!=='end'&&canNext())advance();}
  function action(key){if(onAction)onAction(key,{state,extras,next,advance});}
  function update({dt,active,unfold,progress,paused}){const open=kit.smooth(.04,.94,unfold/3)*kit.smooth(.35,1,progress);if(active&&progress>.999&&!paused){state.time+=dt;state.clock+=dt;if(state.time>=steps[state.index][1])advance();}kit.fold(open);animate({state,extras,open,active,dt:active&&!paused?dt:0});}
