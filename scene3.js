@@ -1,5 +1,5 @@
 import * as THREE from './vendor/three.module.js';
-import {createVessel} from './vessel.js?v=73e6e074da63';
+import {createVessel} from './vessel.js?v=1abd543103aa';
 
 export function createStorm({left,right,paper,pieces,assets,cream,grain,box,actorTemplate,stage,smooth}){
  const L=new THREE.Group(),R=new THREE.Group();left.add(L);right.add(R);
@@ -33,7 +33,7 @@ export function createStorm({left,right,paper,pieces,assets,cream,grain,box,acto
   ['row',11,'선원들은 요나를 구하려고 힘껏 노를 저었어요. 하지만 파도는 더욱 거세졌어요.'],
   ['lower',10,'선원들은 하나님께 기도한 뒤, 요나를 조심스럽게 바다에 내려놓았어요.'],
   ['calm',7,'그러자 거센 바람이 멎고, 바다가 잠잠해졌어요.'],
-  ['worship',6,'선원들은 하나님을 두려워하며 경배했어요.'],
+  ['worship',6,'선원들은 두 손을 높이 들고 하나님을 찬양했어요.'],
   ['end',Infinity,'바다에 내려간 요나는 어떻게 되었을까요?']
  ];
  const state={index:0,time:0,clock:0,phase:'wind'};
@@ -57,7 +57,7 @@ export function createStorm({left,right,paper,pieces,assets,cream,grain,box,acto
   sail.rotation.z=(-.08*strength+Math.sin(c*3)*.025*strength)*open;
   warm.intensity=active?settled*2:0;
   [jonah,sailorA,sailorB].forEach(pose);
-  sailorA.root.position.set(.35,.62,.34);sailorB.root.position.set(1.03,.6,.34);
+  sailorA.root.position.set(.35,.62,.34);sailorB.root.position.set(1.03,.6,.34);sailorA.root.scale.setScalar(.43);sailorB.root.scale.setScalar(.4);
   sailorA.body.rotation.z=-.1*strength;sailorA.armL.rotation.z=1.15+settled*1.4;
   sailorB.body.rotation.z=.07*strength;
   jonah.root.position.set(-.62,.16,.07);jonah.body.rotation.z=-.55;cover.rotation.y=0;
@@ -82,11 +82,23 @@ export function createStorm({left,right,paper,pieces,assets,cream,grain,box,acto
    // The foreground layer occludes him first; hide only once fully below the paper sea.
    jonah.root.visible=down<1;
   }else jonah.root.visible=true;
-  if(i>=7){sailorA.armL.rotation.z=1.8;sailorA.armR.rotation.z=-1.8;sailorB.armL.rotation.z=1.8;sailorB.armR.rotation.z=-1.8;sailorA.head.rotation.x=sailorB.head.rotation.x=.16;}
+  // The source paper character has raised hands at zero arm rotation.
+  // Lift both hands as the sea settles, then hold praise through the final beat.
+  const praise=i===6?smooth(3,6,t):i>=7?1:0;
+  if(i>=6){
+   [sailorA,sailorB].forEach((a,n)=>{
+    a.root.position.z=THREE.MathUtils.lerp(.34,.65,praise);
+    a.root.scale.setScalar(THREE.MathUtils.lerp(n?.4:.43,n?.48:.5,praise));
+    a.armL.rotation.z=THREE.MathUtils.lerp(a.armL.rotation.z,0,praise);
+    a.armR.rotation.z=THREE.MathUtils.lerp(a.armR.rotation.z,0,praise);
+    a.head.rotation.x=THREE.MathUtils.lerp(a.head.rotation.x,-.16,praise);
+    a.body.rotation.z=Math.sin(c*1.2+n*.6)*.025*praise;
+   });
+  }
   splash.visible=i===5&&t>=8&&t<8.7;splash.scale.setScalar(.7+.2*Math.sin((t-8)*Math.PI/.7));
   dialogue.hidden=!(active&&steps[i][3]&&progress>.999);dialogue.textContent=steps[i][3]||'';
   sleep.hidden=!(active&&i<2&&progress>.999);project(sleep,cabin,0,1.2,.15);
-  Object.assign(stage.dataset,{stormPhase:state.phase,stormTime:t.toFixed(2),stormStrength:strength.toFixed(3),stormRoll:ship.rotation.z.toFixed(3),stormJonahY:jonah.root.position.y.toFixed(3),stormJonahVisible:String(jonah.root.visible),stormOars:String(i===4),stormFold:open.toFixed(3)});
+  Object.assign(stage.dataset,{stormPraise:praise.toFixed(3),stormPhase:state.phase,stormTime:t.toFixed(2),stormStrength:strength.toFixed(3),stormRoll:ship.rotation.z.toFixed(3),stormJonahY:jonah.root.position.y.toFixed(3),stormJonahVisible:String(jonah.root.visible),stormOars:String(i===4),stormFold:open.toFixed(3)});
  }
  reset();return {L,R,state,reset,update,next,canNext,caption:()=>steps[state.index][2],hint:()=>state.index===8?'현재 마지막 장면이에요 · 큰 물고기는 다음 이야기에 등장해요.':''};
 }
