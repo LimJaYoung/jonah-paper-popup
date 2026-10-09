@@ -87,3 +87,13 @@ h1{font-weight:400;letter-spacing:-.025em}#narration{line-height:1.65}
 .brand-logo{display:block;width:100%;height:auto;position:absolute;left:0;top:50%;transform:translateY(-50%)}
 @media(max-width:600px){.brand{width:190px;height:60px}}
 @media(max-width:360px){.brand{width:170px}}
+
+/* Larger story copy across every scene, including character dialogue. */
+#narration{font-size:24px;line-height:1.6;word-break:keep-all;overflow-wrap:anywhere}
+#speech{font-size:18px;line-height:1.5;white-space:normal;width:max-content;max-width:min(320px,80vw);padding:9px 14px;text-align:center;word-break:keep-all}
+.storm-dialogue{font-size:18px;line-height:1.6;width:clamp(280px,28vw,390px)}
+@media(max-width:600px){
+ #narration{font-size:20px;line-height:1.6}
+ #speech{font-size:16px;max-width:76vw;padding:7px 11px}
+ .storm-dialogue{font-size:16px;line-height:1.5;width:min(310px,82vw);left:50%}
+}
