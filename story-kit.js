@@ -36,9 +36,26 @@ export function createKit(ctx){
   const upper=new THREE.Group();rig.add(upper);
   textured('whale',[...seam,[-.75,0],[.95,0],[.95,2.6],[-2.1,2.6]],upper,[0,0],4.2,2.6);
   const tail=new THREE.Group();tail.position.set(.95,.7,0);rig.add(tail);textured('whale',[[.95,0],[2.1,0],[2.1,2.6],[.95,2.6]],tail,[.95,.7],4.2,2.6);
-  const jaw=new THREE.Group();jaw.position.set(-.75,1.08,.025);rig.add(jaw);textured('whale',[[-2.1,0],[-.75,0],...seam.slice().reverse()],jaw,[-.75,1.08],4.2,2.6);
-  const mouth=cut([[-2.02,1.64],[-.72,1.08],[-1.1,.55],[-1.95,.85]],mat('#254957'),rig);mouth.position.z=-.08;
-  return {root,rig,jaw,tail,mouth,x,z};
+  const jaw=new THREE.Group();jaw.position.z=.025;rig.add(jaw);
+  const lower=textured('whale',[[-2.1,0],[-.75,0],...seam.slice().reverse()],jaw,[0,0],4.2,2.6);
+  const rest=lower.geometry.attributes.position.array.slice();
+  // Keep the entire cheek edge attached, opening only the front of the jaw.
+  const mouthGeo=new THREE.BufferGeometry(),vertices=new Float32Array(seam.length*6),indices=[];
+  for(let i=0;i<seam.length-1;i++){const a=i*2;indices.push(a,a+1,a+2,a+1,a+3,a+2);}
+  mouthGeo.setAttribute('position',new THREE.BufferAttribute(vertices,3));mouthGeo.setIndex(indices);
+  const mouth=new THREE.Mesh(mouthGeo,mat('#183c4b'));mouth.position.z=.012;rig.add(mouth);
+  function drop(px,amount){return .72*amount*(1-smooth(-2.1,-.75,px));}
+  function setMouth(amount){
+   amount=THREE.MathUtils.clamp(amount,0,1);
+   const pos=lower.geometry.attributes.position;
+   for(let i=0;i<pos.count;i++)pos.setXYZ(i,rest[i*3],rest[i*3+1]-drop(rest[i*3],amount),rest[i*3+2]);
+   pos.needsUpdate=true;lower.geometry.computeVertexNormals();lower.geometry.computeBoundingSphere();
+   const p=mouthGeo.attributes.position;
+   seam.forEach(([sx,sy],i)=>{p.setXYZ(i*2,sx,sy,0);p.setXYZ(i*2+1,sx,sy-drop(sx,amount),0);});
+   p.needsUpdate=true;mouthGeo.computeVertexNormals();mouthGeo.computeBoundingSphere();mouth.visible=amount>.001;
+  }
+  setMouth(0);
+  return {root,rig,jaw,tail,mouth,setMouth,x,z};
  }
  function waves(){for(let layer=0;layer<3;layer++)for(const [parent,min,max] of [[L,-4.3,0],[R,0,4.3]])add(layer===1?'waves-middle':'waves',parent,{w:8.6,h:[2.1,.65,.8][layer],min,max,z:[-2.65,-.15,2.45][layer],direction:layer? -1:1,tint:[0xbde6ed,0x76c9ce,0x3eafba][layer]});}
  function city(parent,x,z,size=1){return add('nineveh',parent,{x,z,w:3.6*size,h:2.1*size,direction:1});}
