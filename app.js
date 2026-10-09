@@ -127,7 +127,12 @@ setupStory=async()=>{
  rearMesh.position.z=-.008;rearMesh.castShadow=true;rearMesh.receiveShadow=true;
  rearMesh.customDepthMaterial=new THREE.MeshDepthMaterial({depthPacking:THREE.RGBADepthPacking,map:rear.tex,alphaTest:.94,side:THREE.DoubleSide});
  joint.add(rearMesh);return joint;}
- const head=segment(-.6,.6,1.37,2.15,0,1.37);segment(-.6,.6,.26,1.37,0,.26);
+ // Separate shoulder hinges let the existing front AND back artwork lower
+ // its arms continuously rather than swapping to a different walking pose.
+ const head=segment(-.23,.23,1.37,2.15,0,1.37);
+ const armL=segment(-.6,-.23,1.37,2.15,-.23,1.42);
+ const armR=segment(.23,.6,1.37,2.15,.23,1.42);
+ segment(-.6,.6,.26,1.37,0,.26);
  const footL=segment(-.6,0,0,.26,-.19,.26),footR=segment(0,.6,0,.26,.19,.26);
  const light=new THREE.PointLight(0xffce70,0,7,2);light.position.set(2.3,3,-.1);book.add(light);
  const glowCanvas=document.createElement('canvas');glowCanvas.width=glowCanvas.height=128;const gc=glowCanvas.getContext('2d'),grad=gc.createRadialGradient(64,64,0,64,64,64);grad.addColorStop(0,'rgba(255,208,102,.32)');grad.addColorStop(1,'rgba(255,220,139,0)');gc.fillStyle=grad;gc.fillRect(0,0,128,128);
@@ -203,6 +208,10 @@ setupStory=async()=>{
   body.rotation.y=facing*smooth(.4,1,progress)*smooth(0,2.5,unfold);
   const stepping=walking&&story.time>.65&&story.walk<1;
   body.rotation.z=stepping?-.04+Math.sin((story.time-.65)*10)*.035:0;
+  const armsDown=(walking?smooth(0,.48,story.time):atPort?1:0)*smooth(.4,1,progress)*smooth(0,2.5,unfold);
+  const armSwing=stepping?Math.sin((story.time-.65)*10)*.18:0;
+  armL.rotation.set(armSwing,0,2.55*armsDown);
+  armR.rotation.set(-armSwing,0,-2.55*armsDown);
   head.rotation.x=walking||atPort?0:t<4?-.12*smooth(0,2,t):-.06;
   head.rotation.y=t>=10&&t<14?Math.sin((t-10)*3)*.17:0;
   head.rotation.z=t>=7&&t<10?Math.sin((t-7)*1.2)*.06:0;
@@ -227,7 +236,7 @@ setupStory=async()=>{
   text(document.querySelector('.chapter'),story.scene===0?'오프닝 표지':'본문 씬 1');text($('scene-name'),story.scene===0?'바다 위의 요나':'요나야, 니느웨로 가렴');
   stage.setAttribute('aria-label',story.scene===0?'청록색 책이 열리며 파도와 배, 요나, 큰 물고기가 펼쳐지는 3D 종이 팝업북':'두 갈래 길 앞의 요나, 오른쪽 니느웨 성문과 왼쪽 작은 항구가 펼쳐진 종이 팝업북');
   if(turning)$('state-label').textContent=travel<.5?'페이지와 종이가 함께 접히는 중':'다음 페이지와 종이가 함께 펼쳐지는 중';
-  stage.dataset.phase=story.phase;stage.dataset.scene=String(story.scene);stage.dataset.walk=String(story.walk);stage.dataset.oceanVisible=String(openingRight.visible);stage.dataset.pageAngle=turn.rotation.z.toFixed(3);stage.dataset.pageTurning=String(turn.visible);stage.dataset.unfold=unfold.toFixed(3);stage.dataset.oceanFold=ocean.toFixed(3);stage.dataset.artOnLeaf=String(openingRight.parent===turn&&storyLeft.parent===reverse);
+  stage.dataset.phase=story.phase;stage.dataset.scene=String(story.scene);stage.dataset.walk=String(story.walk);stage.dataset.oceanVisible=String(openingRight.visible);stage.dataset.pageAngle=turn.rotation.z.toFixed(3);stage.dataset.pageTurning=String(turn.visible);stage.dataset.unfold=unfold.toFixed(3);stage.dataset.oceanFold=ocean.toFixed(3);stage.dataset.artOnLeaf=String(openingRight.parent===turn&&storyLeft.parent===reverse);stage.dataset.armsDown=armsDown.toFixed(3);
   scene.updateMatrixWorld(true);project(cityLabel,gate,0,2.45,0);project(portLabel,harborBoat,0,1.65,0);project(speech,hero,.15,2.4,0);
  };
 };
