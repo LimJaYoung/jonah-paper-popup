@@ -14,3 +14,18 @@
 @media(max-width:600px){.storm-dialogue{top:2%;left:50%;width:min(300px,80vw);font-size:12px;padding:12px 16px}.storm-dialogue::after{left:60%}}
 
 #end-actions{display:flex;justify-content:center;gap:12px;margin:12px 0}#end-actions[hidden]{display:none}#end-actions button{border:1px solid #9cae9f;border-radius:20px;padding:10px 22px;background:#f4eddc;color:#245b5c;cursor:pointer}#end-actions button:disabled{opacity:.45}
+
+/* One shared mobile frame for the cover and every story spread. */
+@media(max-width:600px){
+ .heading{height:140px;padding-top:22px;padding-inline:16px}
+ h1{font-size:clamp(21px,5.7vw,25px);line-height:1.2;min-height:60px;display:flex;align-items:center;justify-content:center}
+ .eyebrow{margin-bottom:4px}
+ .intro{margin-top:4px}
+ #stage{height:clamp(250px,64vw,280px);margin-top:0}
+ .page-arrow{top:50%;width:44px;min-height:60px}
+ .page-arrow-left{left:8px}.page-arrow-right{right:8px}
+ #story-ui{margin-top:0;min-height:74px;margin-bottom:16px}
+ .storm-dialogue{top:0;left:57%;width:min(260px,74vw);padding:9px 12px;line-height:1.5}
+}
+
+#qa-tools{display:flex;flex-wrap:wrap;gap:8px;max-width:100%;padding:8px}#qa-tools input{width:65px}
