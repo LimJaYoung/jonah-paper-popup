@@ -9,3 +9,5 @@
 @media(max-width:600px){.page-arrow{top:85%;width:46px;min-height:64px;border-radius:24px}.page-arrow span{font-size:32px}.page-arrow small{font-size:10px}.page-arrow-left{left:10px}.page-arrow-right{right:10px}}
 #voyage-boat{width:clamp(160px,18vw,260px);height:clamp(140px,16vw,230px);border-color:#bc953c55}
 .storm-dialogue{font:13px/1.5 'Apple SD Gothic Neo',sans-serif;color:#7d584b;background:#fff7e8;border:1px solid #d8c7a1;border-radius:16px;padding:10px 18px;margin:12px auto 0;max-width:1020px;word-break:keep-all;overflow-wrap:anywhere}@media(max-width:600px){.storm-dialogue{font-size:12px}}
+
+#end-actions{display:flex;justify-content:center;gap:12px;margin:12px 0}#end-actions[hidden]{display:none}#end-actions button{border:1px solid #9cae9f;border-radius:20px;padding:10px 22px;background:#f4eddc;color:#245b5c;cursor:pointer}#end-actions button:disabled{opacity:.45}
