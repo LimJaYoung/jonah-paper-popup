@@ -1,4 +1,4 @@
-import {createKit,controller} from './story-kit.js?v=c8182298ad7a';
+import {createKit,controller} from './story-kit.js?v=9b946dd8f5d5';
 export function createScene4(ctx){const k=createKit(ctx),{L,R,mat,hinge,oval,smooth}=k;k.waves();
  // Three paper-cut seaweed silhouettes, rooted on their own page hinges.
  const seaweed=[];
