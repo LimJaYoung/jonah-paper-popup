@@ -1,5 +1,5 @@
 import * as THREE from './vendor/three.module.js';
-import {createVessel} from './vessel.js?v=1abd543103aa';
+import {createVessel} from './vessel.js?v=b3b9c8e3c0f4';
 
 export function createStorm({left,right,paper,pieces,assets,cream,grain,box,actorTemplate,stage,smooth}){
  const L=new THREE.Group(),R=new THREE.Group();left.add(L);right.add(R);
@@ -8,6 +8,18 @@ export function createStorm({left,right,paper,pieces,assets,cream,grain,box,acto
  const {ship,boat,sail,actor,sailorA,sailorB,cabin,cover}=createVessel({R,add,assets,cream,grain,box,actorTemplate});
  ship.position.set(.35,.15,.2);
  const jonah=actor(boat,.58);
+ // Prayer cutouts are attached to the deck, so they follow the ship and page fold.
+ const prayerArt=assets['sailor-praying'];
+ const prayingSailors=[0,1].map(n=>{
+  const h=n?.76:.8,w=h*(prayerArt.x1-prayerArt.x0)/(prayerArt.y1-prayerArt.y0);
+  const geometry=new THREE.PlaneGeometry(w,h);geometry.translate(0,h/2,0);
+  const uv=geometry.attributes.uv;
+  for(let i=0;i<uv.count;i++)uv.setXY(i,THREE.MathUtils.lerp(prayerArt.x0/prayerArt.iw,prayerArt.x1/prayerArt.iw,uv.getX(i)),THREE.MathUtils.lerp(1-prayerArt.y1/prayerArt.ih,1-prayerArt.y0/prayerArt.ih,uv.getY(i)));
+  const material=new THREE.MeshStandardMaterial({map:prayerArt.tex,alphaTest:.94,roughness:1,side:THREE.DoubleSide,color:n?0xe6d8a6:0xffffff});
+  const figure=new THREE.Mesh(geometry,material);figure.position.set(n?.65:-.35,.65,.65);figure.castShadow=figure.receiveShadow=true;
+  figure.customDepthMaterial=new THREE.MeshDepthMaterial({map:prayerArt.tex,alphaTest:.94,depthPacking:THREE.RGBADepthPacking,side:THREE.DoubleSide});
+  figure.visible=false;boat.add(figure);return figure;
+ });
  const wood=new THREE.MeshStandardMaterial({map:grain('#bd8b56'),roughness:1});
  // All extra props are thin, textured paper; no new raster artwork is required.
  function cutout(points,material,parent){const shape=new THREE.Shape();points.forEach(([x,y],i)=>i?shape.lineTo(x,y):shape.moveTo(x,y));shape.closePath();const mesh=new THREE.Mesh(new THREE.ExtrudeGeometry(shape,{depth:.025,bevelEnabled:false}),material);mesh.castShadow=mesh.receiveShadow=true;parent.add(mesh);return mesh;}
@@ -33,11 +45,11 @@ export function createStorm({left,right,paper,pieces,assets,cream,grain,box,acto
   ['row',11,'선원들은 요나를 구하려고 힘껏 노를 저었어요. 하지만 파도는 더욱 거세졌어요.'],
   ['lower',10,'선원들은 하나님께 기도한 뒤, 요나를 조심스럽게 바다에 내려놓았어요.'],
   ['calm',7,'그러자 거센 바람이 멎고, 바다가 잠잠해졌어요.'],
-  ['worship',6,'선원들은 두 손을 높이 들고 하나님을 찬양했어요.'],
+  ['worship',6,'선원들은 무릎을 꿇고 두 손을 모아 하나님께 기도했어요.'],
   ['end',Infinity,'바다에 내려간 요나는 어떻게 되었을까요?']
  ];
  const state={index:0,time:0,clock:0,phase:'wind'};
- function reset(){Object.assign(state,{index:0,time:0,clock:0,phase:'wind'});dialogue.hidden=sleep.hidden=true;}
+ function reset(){Object.assign(state,{index:0,time:0,clock:0,phase:'wind'});dialogue.hidden=sleep.hidden=true;prayingSailors.forEach(p=>p.visible=false);sailorA.root.visible=sailorB.root.visible=true;}
  function advance(){if(state.index<steps.length-1){state.index++;state.time=0;state.phase=steps[state.index][0];}}
  // Keep full reading and action time; next can advance only after that beat is ready.
  function canNext(){return state.index<8&&state.time>=steps[state.index][1]-2;}
@@ -82,23 +94,17 @@ export function createStorm({left,right,paper,pieces,assets,cream,grain,box,acto
    // The foreground layer occludes him first; hide only once fully below the paper sea.
    jonah.root.visible=down<1;
   }else jonah.root.visible=true;
-  // The source paper character has raised hands at zero arm rotation.
-  // Lift both hands as the sea settles, then hold praise through the final beat.
-  const praise=i===6?smooth(3,6,t):i>=7?1:0;
-  if(i>=6){
-   [sailorA,sailorB].forEach((a,n)=>{
-    a.root.position.z=THREE.MathUtils.lerp(.34,.65,praise);
-    a.root.scale.setScalar(THREE.MathUtils.lerp(n?.4:.43,n?.48:.5,praise));
-    a.armL.rotation.z=THREE.MathUtils.lerp(a.armL.rotation.z,0,praise);
-    a.armR.rotation.z=THREE.MathUtils.lerp(a.armR.rotation.z,0,praise);
-    a.head.rotation.x=THREE.MathUtils.lerp(a.head.rotation.x,-.16,praise);
-    a.body.rotation.z=Math.sin(c*1.2+n*.6)*.025*praise;
-   });
-  }
+  const praying=i>=7;
+  [sailorA,sailorB].forEach((a,n)=>{
+   a.root.visible=!praying;
+   prayingSailors[n].visible=praying;
+   prayingSailors[n].rotation.z=0;
+   if(i===6){a.armL.rotation.z=2.55;a.armR.rotation.z=-2.55;a.head.rotation.x=.12;}
+  });
   splash.visible=i===5&&t>=8&&t<8.7;splash.scale.setScalar(.7+.2*Math.sin((t-8)*Math.PI/.7));
   dialogue.hidden=!(active&&steps[i][3]&&progress>.999);dialogue.textContent=steps[i][3]||'';
   sleep.hidden=!(active&&i<2&&progress>.999);project(sleep,cabin,0,1.2,.15);
-  Object.assign(stage.dataset,{stormPraise:praise.toFixed(3),stormPhase:state.phase,stormTime:t.toFixed(2),stormStrength:strength.toFixed(3),stormRoll:ship.rotation.z.toFixed(3),stormJonahY:jonah.root.position.y.toFixed(3),stormJonahVisible:String(jonah.root.visible),stormOars:String(i===4),stormFold:open.toFixed(3)});
+  Object.assign(stage.dataset,{stormPraying:String(praying),stormPhase:state.phase,stormTime:t.toFixed(2),stormStrength:strength.toFixed(3),stormRoll:ship.rotation.z.toFixed(3),stormJonahY:jonah.root.position.y.toFixed(3),stormJonahVisible:String(jonah.root.visible),stormOars:String(i===4),stormFold:open.toFixed(3)});
  }
  reset();return {L,R,state,reset,update,next,canNext,caption:()=>steps[state.index][2],hint:()=>state.index===8?'현재 마지막 장면이에요 · 큰 물고기는 다음 이야기에 등장해요.':''};
 }

@@ -1,12 +1,12 @@
 const titles=['큰 물고기가 나타났어요','하나님, 제 기도를 들어주세요','다시 시작할 기회','니느웨 사람들이 달라졌어요','하나님은 모두를 아끼세요'];
-import {createScene4} from './scene4.js?v=1abd543103aa';
-import {createScene5} from './scene5.js?v=1abd543103aa';
-import {createScene6} from './scene6.js?v=1abd543103aa';
-import {createScene7} from './scene7.js?v=1abd543103aa';
-import {createScene8} from './scene8.js?v=1abd543103aa';
+import {createScene4} from './scene4.js?v=b3b9c8e3c0f4';
+import {createScene5} from './scene5.js?v=b3b9c8e3c0f4';
+import {createScene6} from './scene6.js?v=b3b9c8e3c0f4';
+import {createScene7} from './scene7.js?v=b3b9c8e3c0f4';
+import {createScene8} from './scene8.js?v=b3b9c8e3c0f4';
 import * as THREE from './vendor/three.module.js';
-import {createStorm} from './scene3.js?v=1abd543103aa';
-import {createVoyage} from './scene2.js?v=1abd543103aa';
+import {createStorm} from './scene3.js?v=b3b9c8e3c0f4';
+import {createVoyage} from './scene2.js?v=b3b9c8e3c0f4';
 const stage=document.querySelector('#stage'),slider=document.querySelector('#progress');
 const scene=new THREE.Scene();
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
@@ -117,7 +117,7 @@ window.popupBook={setProgress(p){progress=targetProgress=THREE.MathUtils.clamp(p
 
 // Scene 1 uses the original paper() silhouette, edge, back and hinge renderer.
 setupStory=async()=>{
- await Promise.all(['nineveh','houses','jonah-back','sailor'].map(async n=>assets[n]=await asset(n)));
+ await Promise.all(['nineveh','houses','jonah-back','sailor','sailor-praying'].map(async n=>assets[n]=await asset(n)));
  const $=id=>document.getElementById(id);
  const text=(el,value)=>{if(el.textContent!==value)el.textContent=value;};
  const storyLeft=new THREE.Group(),storyRight=new THREE.Group();left.add(storyLeft);right.add(storyRight);
