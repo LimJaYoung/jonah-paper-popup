@@ -68,18 +68,153 @@ const whaleRight=paper('whale',right,{w:7.5,h:4.3,min:0,max:3.75,z:-1.8,delay:.1
 const whaleLeft=paper('whale',right,{w:7.5,h:4.3,min:-3.75,max:0,z:-1.8,delay:.1,direction:1,lift:.046,phase:1});
 // A second, vertical crease folds the broad whale into the right-hand page.
 right.remove(right.children[right.children.indexOf(whaleLeft)+1]);right.remove(whaleLeft);whaleRight.add(whaleLeft);whaleLeft.position.set(0,0,0);pieces.splice(pieces.findIndex(p=>p.pivot===whaleLeft),1);
+const openingLeft=new THREE.Group(),openingRight=new THREE.Group();
+// Groups keep opening artwork and its hinge feet together.
+for(const [leaf,group] of [[left,openingLeft],[right,openingRight]]){leaf.add(group);for(const child of [...leaf.children])if(child!==group&&(child.name.endsWith('-fold')||(child.isMesh&&child.geometry.parameters?.depth===.075)))group.attach(child);}
 const boat=paper('boat',right,{x:2.22,w:3.45,h:2.78,z:.9,delay:.19,direction:-1,lift:.165,phase:4});
 const jonah=paper('jonah',right,{x:3.0,w:.88,h:1.48,z:1.0,offset:.46,delay:.2,direction:-1,lift:.19,phase:4});
 // The hull is a foreground paper ply so Jonah sits inside, in front of the sail.
 const hullFace=boat.children[0].clone();hullFace.geometry=hullFace.geometry.clone();const hp=hullFace.geometry.attributes.position,hu=hullFace.geometry.attributes.uv;for(let i=0;i<hp.count;i++){if(hp.getY(i)>1){const original=hp.getY(i);hp.setY(i,.91);const bottomV=hu.getY(2);hu.setY(i,bottomV+(hu.getY(i)-bottomV)*.91/original);}}hp.needsUpdate=hu.needsUpdate=true;hullFace.position.z=.19;boat.add(hullFace);
+for(const child of [...right.children])if(child.name.endsWith('-fold')||(child.isMesh&&child.geometry.parameters?.depth===.075))openingRight.attach(child);
+const openingPieces=[...pieces];
+const story={scene:0,phase:'idle',time:0,unfold:0,narrative:0,walk:0};
+let updateStory,setupStory;
 let progress=0,targetProgress=0,replaying=false,paused=false,last=performance.now(),swayTime=0;const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const smooth=(a,b,v)=>{const t=THREE.MathUtils.clamp((v-a)/(b-a),0,1);return t*t*(3-2*t)};
-function apply(p,time=0){whaleLeft.rotation.set(0,-Math.PI*(1-smooth(.12,.96,p)),0);leftHinge.rotation.z=-Math.PI*(1-p);updateCoverBinding(leftHinge.rotation.z);updatePageBinding(leftHinge.rotation.z);for(const it of pieces){const unfold=smooth(it.delay,.94,p);const sway=(reduce?0:Math.sin(time*.65+it.phase)*.012)*smooth(.94,1,p);it.pivot.rotation.x=it.direction*(Math.PI/2*(1-unfold)+sway);}
- slider.value=Math.round(p*1000);document.querySelector('#percentage').value=`${Math.round(p*100)}%`;document.querySelector('#state-label').textContent=p<.001?'닫힌 책':p>.999?'펼쳐진 바다':'펼쳐지는 중';}
+function apply(p,time=0){whaleLeft.rotation.set(0,-Math.PI*(1-smooth(.12,.96,p)),0);leftHinge.rotation.z=-Math.PI*(1-p);updateCoverBinding(leftHinge.rotation.z);updatePageBinding(leftHinge.rotation.z);for(const it of openingPieces){const unfold=smooth(it.delay,.94,p);const sway=(reduce?0:Math.sin(time*.65+it.phase)*.012)*smooth(.94,1,p);it.pivot.rotation.x=it.direction*(Math.PI/2*(1-unfold)+sway);}
+ slider.value=Math.round(p*1000);document.querySelector('#percentage').value=`${Math.round(p*100)}%`;document.querySelector('#state-label').textContent=p<.001?'닫힌 책':p>.999?(story.scene===0?'펼쳐진 바다':'펼쳐진 마을'):'펼쳐지는 중';}
 function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h);camera.aspect=w/h;const distance=Math.max(15.5,13.4/(2*Math.tan(THREE.MathUtils.degToRad(16))*camera.aspect));camera.position.copy(target).add(new THREE.Vector3(0,.88,2.2).normalize().multiplyScalar(distance));camera.lookAt(target);camera.updateProjectionMatrix();}window.addEventListener('resize',resize);resize();
 function buttonPause(){document.querySelector('#pause').innerHTML=paused?'계속 재생 <span>▷</span>':'일시 정지 <span>Ⅱ</span>';document.querySelector('#pause').setAttribute('aria-label',paused?'움직임 계속 재생':'움직임 일시 정지');}
-document.querySelector('#open').onclick=()=>{targetProgress=1;replaying=false;paused=false;buttonPause()};document.querySelector('#close').onclick=()=>{targetProgress=0;replaying=false;paused=false;buttonPause()};document.querySelector('#replay').onclick=()=>{targetProgress=0;replaying=true;paused=false;buttonPause()};document.querySelector('#pause').onclick=()=>{paused=!paused;buttonPause()};slider.addEventListener('input',()=>{progress=Number(slider.value)/1000;targetProgress=progress;replaying=false;apply(progress,swayTime)});
-document.querySelector('#loading').remove();
-function frame(now){const dt=Math.min((now-last)/1000,.05);last=now;if(!paused){swayTime+=dt;const diff=targetProgress-progress;progress+=Math.sign(diff)*Math.min(Math.abs(diff),dt/(reduce?.125:2.75));if(replaying&&progress===0){targetProgress=1;replaying=false}}apply(progress,swayTime);renderer.render(scene,camera);requestAnimationFrame(frame)}requestAnimationFrame(frame);
+// Story controller owns all inputs, including the original book controls.
+// initialization follows the story controller below
+function frame(now){const dt=Math.min((now-last)/1000,.05);last=now;if(!paused){swayTime+=dt;const diff=targetProgress-progress;progress+=Math.sign(diff)*Math.min(Math.abs(diff),dt/(reduce?.125:2.75));if(replaying&&progress===0){targetProgress=1;replaying=false}}apply(progress,swayTime);updateStory(paused?0:dt);renderer.render(scene,camera);requestAnimationFrame(frame)}// animation starts after scene assets load
 // Deterministic QA access: no camera controls in the public scene.
 window.popupBook={setProgress(p){progress=targetProgress=THREE.MathUtils.clamp(p,0,1);paused=true;replaying=false;buttonPause();apply(progress,0);renderer.render(scene,camera)},getState(){return {progress,paused,pieces:pieces.length,renderer:renderer.info.render}},audit(){scene.updateMatrixWorld(true);return pieces.map(it=>{const anchor=it.pivot.getWorldPosition(new THREE.Vector3());const local=it.parent.worldToLocal(anchor.clone());return {name:it.name,leaf:it.parent.name,anchor:[local.x,local.y,local.z],fold:it.pivot.rotation.x,closedFootprint:[it.min+it.pivot.position.x,it.max+it.pivot.position.x,it.pivot.position.z,it.pivot.position.z+it.direction*it.h]}})}};
+
+// Scene 1 uses the original paper() silhouette, edge, back and hinge renderer.
+setupStory=async()=>{
+ await Promise.all(['nineveh','houses'].map(async n=>assets[n]=await asset(n)));
+ const $=id=>document.getElementById(id);
+ const text=(el,value)=>{if(el.textContent!==value)el.textContent=value;};
+ const storyLeft=new THREE.Group(),storyRight=new THREE.Group();left.add(storyLeft);right.add(storyRight);
+ const newPieces=[];
+ const add=(name,parent,opts)=>{const p=paper(name,parent,opts);newPieces.push(pieces.pop());return p};
+ add('houses',storyRight,{x:2.15,z:-2.8,w:4.3,h:2.25,direction:1,delay:0});
+ add('houses',storyRight,{x:2.45,z:-2.05,w:3.7,h:1.9,direction:1,delay:.12,lift:.02});
+ const gate=add('nineveh',storyRight,{x:2.3,z:-1.15,w:4.3,h:2.25,direction:1,delay:.2,lift:.035});
+ const harborBoat=add('boat',storyLeft,{x:-3,z:-1.2,w:1.65,h:1.34,direction:1,delay:.85,lift:.025});
+ add('houses',storyLeft,{x:-3.25,z:-2.4,w:1.8,h:.83,direction:1,delay:.35});
+ // A small flat paper harbor and dock, kept secondary to the city.
+ const harbor=new THREE.Mesh(new THREE.CircleGeometry(.94,40),new THREE.MeshStandardMaterial({map:grain('#75b9bb'),roughness:1}));harbor.rotation.x=-Math.PI/2;harbor.position.set(-3,.075,-.9);storyLeft.add(harbor);
+ for(let i=0;i<5;i++)box(.23,.035,.85,cream,-2.65+i*.2,.11,-.4,storyLeft);
+ // Paths are paper strips with a low scored fold; each belongs to its own leaf.
+ const paths=[];
+ function pathStrip(parent,x,z,length,angle){const pivot=new THREE.Group();pivot.position.set(x,.095,z);pivot.rotation.y=angle;parent.add(pivot);const m=box(.7,.018,length,new THREE.MeshStandardMaterial({map:grain('#f7eccf'),roughness:1}),0,0,-length/2,pivot);paths.push(pivot);return m;}
+ pathStrip(storyRight,.33,2.3,1.45,0);pathStrip(storyRight,.34,.9,2.9,-.72);pathStrip(storyLeft,-.04,.9,3.15,.9);
+ const hero=add('jonah',storyRight,{x:.35,z:1.25,w:1.2,h:2.15,direction:-1,delay:1.55,lift:.045});
+ // Split the existing texture into articulated paper parts; no replacement face.
+ const source=hero.children[0],baseGeo=source.geometry,uv=baseGeo.attributes.uv;
+ hero.clear();const body=new THREE.Group();hero.add(body);
+ function segment(x0,x1,y0,y1,px,py){const joint=new THREE.Group();joint.position.set(px,py,0);body.add(joint);const geo=new THREE.PlaneGeometry(x1-x0,y1-y0);geo.translate((x0+x1)/2-px,(y0+y1)/2-py,0);const gUV=geo.attributes.uv;for(let i=0;i<gUV.count;i++)gUV.setXY(i,THREE.MathUtils.lerp(uv.getX(0),uv.getX(1),(x0+.6+(x1-x0)*gUV.getX(i))/1.2),THREE.MathUtils.lerp(uv.getY(2),uv.getY(0),(y0+(y1-y0)*gUV.getY(i))/2.15));const mesh=new THREE.Mesh(geo,source.material.clone());mesh.material.side=THREE.DoubleSide;mesh.castShadow=true;mesh.receiveShadow=true;mesh.customDepthMaterial=source.customDepthMaterial;joint.add(mesh);return joint;}
+ const head=segment(-.6,.6,1.37,2.15,0,1.37);segment(-.6,.6,.26,1.37,0,.26);
+ const footL=segment(-.6,0,0,.26,-.19,.26),footR=segment(0,.6,0,.26,.19,.26);
+ const light=new THREE.PointLight(0xffce70,0,7,2);light.position.set(2.3,3,-.1);book.add(light);
+ const glowCanvas=document.createElement('canvas');glowCanvas.width=glowCanvas.height=128;const gc=glowCanvas.getContext('2d'),grad=gc.createRadialGradient(64,64,0,64,64,64);grad.addColorStop(0,'rgba(255,208,102,.32)');grad.addColorStop(1,'rgba(255,220,139,0)');gc.fillStyle=grad;gc.fillRect(0,0,128,128);
+ const glow=new THREE.Mesh(new THREE.PlaneGeometry(4.4,4.4),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(glowCanvas),transparent:true,depthWrite:false,opacity:0}));glow.rotation.x=-Math.PI/2;glow.position.set(2.2,.15,-.6);storyRight.add(glow);
+ // The outgoing right-hand artwork rides the FRONT of the actual turning leaf.
+ // The incoming left-hand artwork is glued to its REVERSE, never a blank swap.
+ const turn=new THREE.Group();turn.position.y=.34;book.add(turn);
+ box(pw-.12,.025,pd-.18,cream,pw/2,0,0,turn);turn.visible=false;
+ const reverse=new THREE.Group();reverse.rotation.z=-Math.PI;turn.add(reverse);
+ const turnDuration=3;
+ function mountTurn(){turn.add(openingRight);reverse.add(storyLeft);turn.visible=true;}
+ function unmountTurn(){right.add(openingRight);left.add(storyLeft);turn.visible=false;}
+
+ function label(id,text,cls='scene-label'){const el=document.createElement('div');el.id=id;el.className=cls;el.textContent=text;stage.appendChild(el);return el}
+ const cityLabel=label('city-label','니느웨'),portLabel=label('port-label','항구'),speech=label('speech','나는 가기 싫은데…');
+ const hit=document.createElement('button');hit.className='boat-target';hit.id='boat-target';hit.setAttribute('aria-label','항구의 배를 눌러 요나 이동');hit.innerHTML='<span>배를 눌러 보세요</span>';stage.appendChild(hit);
+ const lines=['어느 날, 하나님이 요나를 부르셨어요.','요나야, 니느웨로 가렴. 사람들이 나쁜 행동을 멈추도록 말해 주렴.','하지만 요나는 니느웨에 가고 싶지 않았어요.','요나는 반대쪽으로 가는 배를 타기로 했어요.'];
+ function say(text){if($('narration').textContent!==text)$('narration').textContent=text;}
+ const locked=()=>['turn','return-turn'].includes(story.phase);
+ function resetAct(){story.narrative=0;story.walk=0;story.unfold=0;hero.position.set(.35,.11,1.25);body.rotation.set(0,0,0);head.rotation.set(0,0,0);footL.rotation.set(0,0,0);footR.rotation.set(0,0,0);say('');}
+ function begin(){if(story.scene!==0||locked()||progress<.999)return;resetAct();mountTurn();story.phase='turn';story.time=0;replaying=false;paused=false;buttonPause();}
+ function previous(){if(locked()||progress<.999)return;if(story.scene===0){targetProgress=0;replaying=false;paused=false;buttonPause();return;}mountTurn();story.phase='return-turn';story.time=0;replaying=false;paused=false;targetProgress=1;buttonPause();}
+ function walk(){if(story.phase!=='ready'||progress<.999||paused)return;story.phase='walk';story.time=0;}
+ $('previous').onclick=previous;hit.onclick=walk;
+ // A single primary action connects the closed book and every available spread.
+ $('open').onclick=()=>{
+  if(locked()||Math.abs(targetProgress-progress)>.001)return;
+  if(progress<.999){targetProgress=1;replaying=false;paused=false;buttonPause();}
+  else if(story.scene===0)begin();
+  else if(story.phase==='ready')walk();
+ };
+ $('replay').onclick=()=>{if(locked())return;targetProgress=0;replaying=true;paused=false;if(story.scene===1){resetAct();story.phase='reopen';}buttonPause()};
+ $('pause').onclick=()=>{paused=!paused;buttonPause()};
+ slider.addEventListener('input',()=>{if(locked())return;progress=targetProgress=Number(slider.value)/1000;replaying=false;apply(progress,swayTime)});
+ function project(el,obj,x,y,z){const v=obj.localToWorld(new THREE.Vector3(x,y,z)).project(camera);el.style.left=`${(v.x*.5+.5)*stage.clientWidth}px`;el.style.top=`${(-v.y*.5+.5)*stage.clientHeight}px`;}
+ function phase(next){story.phase=next;story.time=0;}
+ updateStory=dt=>{
+  const busy=locked();if(busy||progress>.999)story.time+=dt;
+  if(locked()&&story.time>=turnDuration){
+   const back=story.phase==='return-turn';unmountTurn();story.scene=back?0:1;
+   if(back){resetAct();phase('idle');}else{story.unfold=1;phase('narrate');}
+  }
+  if(story.phase==='reopen'&&progress>.999){story.unfold=1;phase('narrate');}
+  if(story.phase==='narrate'&&progress>.999){story.narrative+=dt;if(story.narrative>=15)phase('ready');}
+  if(story.phase==='walk'){story.walk=Math.min(1,story.time/2.8);if(story.walk===1){phase('arrived');say(lines[3]);}}
+  const returning=story.phase==='return-turn',turning=locked();
+  const travel=turning?smooth(0,turnDuration,story.time):0;
+  const angleFraction=returning?1-travel:travel;
+  // One continuous motion: closing the old spread and opening the new spread
+  // meet at the vertical leaf. Fold amounts derive from that SAME page angle.
+  const ocean=turning?smooth(.52,1,1-angleFraction):progress;
+  const incoming=turning?smooth(.52,1,angleFraction):story.unfold;
+  if(turning){
+   turn.rotation.z=Math.PI*angleFraction;
+   for(const it of openingPieces)it.pivot.rotation.x=it.direction*Math.PI/2*(1-smooth(it.delay,.94,ocean));
+   whaleLeft.rotation.y=-Math.PI*(1-smooth(.12,.96,ocean));
+  }
+  // At the vertical crease the old spread has closed. Its right-hand art
+  // stays on the hidden front; the next left-hand art reveals on the back.
+  openingRight.visible=turning||story.scene===0;
+  openingLeft.visible=turning?angleFraction<.52:story.scene===0;
+  storyLeft.visible=turning||story.scene===1;
+  storyRight.visible=turning?angleFraction>.06:story.scene===1;
+  let unfold=turning?incoming*3:story.unfold*3;
+  if(story.phase==='reopen')unfold=3;
+  for(const it of newPieces){const a=smooth(it.delay,it.delay+1,unfold)*smooth(it.delay/8,.95,progress);it.pivot.rotation.x=it.direction*Math.PI/2*(1-a);}
+  for(const path of paths)path.rotation.x=-.18*(1-smooth(.7,1.7,unfold));
+  const t=story.narrative,walking=story.phase==='walk',atPort=story.phase==='arrived';
+  const turnBody=t<4?smooth(0,3,t)*.17:t<10?.17:THREE.MathUtils.lerp(.17,-.42,smooth(11,14,t));
+  body.rotation.y=turnBody;body.rotation.z=walking?-.04+Math.sin(story.time*10)*.035:0;
+  head.rotation.x=t<4?-.12*smooth(0,2,t):-.06;
+  head.rotation.y=t>=10&&t<14?Math.sin((t-10)*3)*.17:0;
+  head.rotation.z=t>=7&&t<10?Math.sin((t-7)*1.2)*.06:0;
+  footL.rotation.x=walking?Math.sin(story.time*10)*.55:0;footR.rotation.x=walking?-Math.sin(story.time*10)*.55:0;
+  hero.position.x=THREE.MathUtils.lerp(.35,-2.1,smooth(0,1,story.walk));hero.position.z=THREE.MathUtils.lerp(1.25,-.1,smooth(0,1,story.walk));
+  // On an open book both pages are coplanar; reparent the walking paper to
+  // the left leaf at the crease so closing also keeps it on its destination.
+  const host=hero.position.x<0?storyLeft:storyRight;if(hero.parent!==host){host.add(hero);newPieces.find(p=>p.pivot===hero).parent=host;}
+  const lightAmount=(story.scene===1||turning)?smooth(2.35,3,unfold)*smooth(.6,1,progress):0;light.intensity=lightAmount*3;glow.material.opacity=lightAmount;
+  if(story.phase==='narrate')say(t<4?lines[0]:t<10?lines[1]:lines[2]);
+  if(story.phase==='ready')say(lines[2]);
+  const active=story.scene===1&&progress>.999&&!turning;
+  $('story-nav').hidden=story.scene!==1;$('narration').hidden=!active||['reopen'].includes(story.phase);
+  $('previous').disabled=locked()||progress<.999||Math.abs(targetProgress-progress)>.001;
+  hit.hidden=!(active&&story.phase==='ready');hit.disabled=paused;
+  cityLabel.hidden=portLabel.hidden=!(active&&unfold>=2.8);speech.hidden=!(active&&t>=12&&!walking&&!atPort);
+  text($('story-hint'),atPort?'씬 1 끝 · 요나가 항구에 도착했어요':story.phase==='ready'?'작은 배 또는 아래 ‘항구로 가기’를 눌러 보세요':locked()?'종이 이야기가 펼쳐지고 있어요…':'');
+  for(const id of ['replay','progress'])$(id).disabled=locked();
+  const movingBook=Math.abs(targetProgress-progress)>.001;
+  text($('open'),locked()?'페이지 넘기는 중…':movingBook?(targetProgress>progress?'책 펼치는 중…':'책 닫는 중…'):progress<.999?'책 펼치기':story.scene===0?'다음페이지':story.phase==='ready'?'항구로 가기':atPort?'이야기 끝':walking?'항구로 걷는 중…':'이야기 재생 중…');
+  $('open').disabled=locked()||movingBook||(progress>.999&&story.scene===1&&(story.phase!=='ready'||paused));
+  text(document.querySelector('h1'),story.scene===0?'종이 사이로, 바다가 피어나다.':'요나야, 니느웨로 가렴');
+  text(document.querySelector('.intro'),story.scene===0?'책을 펼치면 시작되는 작은 모험':'하나의 부름, 두 갈래의 길');
+  text(document.querySelector('.chapter'),story.scene===0?'오프닝 표지':'본문 씬 1');text($('scene-name'),story.scene===0?'바다 위의 요나':'요나야, 니느웨로 가렴');
+  stage.setAttribute('aria-label',story.scene===0?'청록색 책이 열리며 파도와 배, 요나, 큰 물고기가 펼쳐지는 3D 종이 팝업북':'두 갈래 길 앞의 요나, 오른쪽 니느웨 성문과 왼쪽 작은 항구가 펼쳐진 종이 팝업북');
+  if(turning)$('state-label').textContent=travel<.5?'페이지와 종이가 함께 접히는 중':'다음 페이지와 종이가 함께 펼쳐지는 중';
+  stage.dataset.phase=story.phase;stage.dataset.scene=String(story.scene);stage.dataset.walk=String(story.walk);stage.dataset.oceanVisible=String(openingRight.visible);stage.dataset.pageAngle=turn.rotation.z.toFixed(3);stage.dataset.pageTurning=String(turn.visible);stage.dataset.unfold=unfold.toFixed(3);stage.dataset.oceanFold=ocean.toFixed(3);stage.dataset.artOnLeaf=String(openingRight.parent===turn&&storyLeft.parent===reverse);
+  scene.updateMatrixWorld(true);project(cityLabel,gate,0,2.45,0);project(portLabel,harborBoat,0,1.65,0);project(hit,harborBoat,0,.6,0);project(speech,hero,.15,2.4,0);
+ };
+};
+await setupStory();document.querySelector('#loading').remove();last=performance.now();requestAnimationFrame(frame);
