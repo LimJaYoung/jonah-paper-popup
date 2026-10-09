@@ -1,4 +1,4 @@
-import {createKit,controller} from './story-kit.js?v=f4cc8ff5f497';
+import {createKit,controller} from './story-kit.js?v=029fccd2bdc5';
 import * as THREE from './vendor/three.module.js';
 export function createScene7(ctx){const k=createKit(ctx),{L,R,mat,hinge,smooth}=k;
  k.city(R,2.15,-2.5,1.08);k.add('houses',L,{x:-2.15,z:-2.2,w:3.9,h:2.6,direction:1});k.add('houses',L,{x:-2.6,z:-.6,w:2.6,h:1.45,direction:1});

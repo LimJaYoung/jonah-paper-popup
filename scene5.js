@@ -1,4 +1,4 @@
-import {createKit,controller} from './story-kit.js?v=f4cc8ff5f497';
+import {createKit,controller} from './story-kit.js?v=029fccd2bdc5';
 import * as THREE from './vendor/three.module.js';
 export function createScene5(ctx){const k=createKit(ctx),{L,R,hinge,mat,cut,smooth}=k;
  // Nested arch silhouettes have open centers, like a layered paper theatre.
