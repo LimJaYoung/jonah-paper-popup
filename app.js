@@ -1,12 +1,12 @@
 const titles=['큰 물고기가 나타났어요','하나님, 제 기도를 들어주세요','다시 시작할 기회','니느웨 사람들이 달라졌어요','하나님은 모두를 아끼세요'];
-import {createScene4} from './scene4.js?v=b3b9c8e3c0f4';
-import {createScene5} from './scene5.js?v=b3b9c8e3c0f4';
-import {createScene6} from './scene6.js?v=b3b9c8e3c0f4';
-import {createScene7} from './scene7.js?v=b3b9c8e3c0f4';
-import {createScene8} from './scene8.js?v=b3b9c8e3c0f4';
+import {createScene4} from './scene4.js?v=385c95c03212';
+import {createScene5} from './scene5.js?v=385c95c03212';
+import {createScene6} from './scene6.js?v=385c95c03212';
+import {createScene7} from './scene7.js?v=385c95c03212';
+import {createScene8} from './scene8.js?v=385c95c03212';
 import * as THREE from './vendor/three.module.js';
-import {createStorm} from './scene3.js?v=b3b9c8e3c0f4';
-import {createVoyage} from './scene2.js?v=b3b9c8e3c0f4';
+import {createStorm} from './scene3.js?v=385c95c03212';
+import {createVoyage} from './scene2.js?v=385c95c03212';
 const stage=document.querySelector('#stage'),slider=document.querySelector('#progress');
 const scene=new THREE.Scene();
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
@@ -205,7 +205,7 @@ setupStory=async()=>{
  let ending=null;
  const endActions=document.createElement('div');endActions.id='end-actions';endActions.hidden=true;
  const finish=document.createElement('button');finish.textContent='이야기 마치기';
- const reread=document.createElement('button');reread.textContent='다시 읽기';endActions.append(finish,reread);$('story-ui').append(endActions);
+ const reread=document.createElement('button');reread.textContent='다시 읽기';endActions.append(finish,reread);document.querySelector('.controls').after(endActions);
  function restart(){if(locked()||ending==='closing')return;ending=null;story.scene=0;story.phase='idle';story.time=0;progress=targetProgress=0;chapters.forEach(c=>c.reset());voyage.reset();storm.reset();resetAct();paused=false;buttonPause();}
  finish.onclick=()=>{if(story.scene!==8||chapters[4].state.phase!=='end'||chapters[4].state.time<4||ending)return;ending='folding';story.time=0;paused=false;buttonPause();};
  reread.onclick=restart;

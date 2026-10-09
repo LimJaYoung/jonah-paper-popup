@@ -102,3 +102,17 @@ footer.creator-credit{justify-content:center;font:12px/1.5 'Pretendard',sans-ser
 
 /* All scene interaction hints share the supporting-text typeface. */
 .boat-target,.boat-target span{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif}
+
+/* Reserve identical title/caption tracks for every page, including the cover.
+   Text wrapping and hidden hints must never move the shared playback panel. */
+.heading{height:140px}
+#story-ui{display:grid;grid-template-rows:80px 36px;row-gap:8px;height:124px;min-height:124px;margin:-32px auto 24px;align-content:start}
+#narration{grid-row:1;align-self:start}
+#story-nav{grid-row:2;align-self:start;margin-top:0;min-width:0}
+#end-actions{max-width:656px;margin:16px auto 0}
+@media(min-width:601px) and (max-width:900px){#story-ui{grid-template-rows:116px 36px;height:160px;min-height:160px}}
+@media(max-width:600px){
+ .heading{height:140px}
+ #story-ui{grid-template-rows:128px 36px;row-gap:8px;height:172px;min-height:172px;margin:0 auto 16px}
+}
+@media(max-width:360px){#story-ui{grid-template-rows:160px 36px;height:204px;min-height:204px}}
