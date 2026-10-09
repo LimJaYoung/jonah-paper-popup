@@ -1,4 +1,4 @@
-import {createVessel} from './vessel.js?v=af20a3269827';
+import {createVessel} from './vessel.js?v=95a3a1b20c25';
 import * as THREE from './vendor/three.module.js';
 
 // Uses the same paper renderer, actor artwork and page-local coordinate system.

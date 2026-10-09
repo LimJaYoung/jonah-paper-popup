@@ -97,3 +97,5 @@ h1{font-weight:400;letter-spacing:-.025em}#narration{line-height:1.65}
  #speech{font-size:16px;max-width:76vw;padding:7px 11px}
  .storm-dialogue{font-size:16px;line-height:1.5;width:min(310px,82vw);left:50%}
 }
+
+footer.creator-credit{justify-content:center;font:12px/1.5 'Pretendard',sans-serif;letter-spacing:.03em;color:#7b8d83}
