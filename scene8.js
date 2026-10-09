@@ -1,4 +1,4 @@
-import {createKit,controller} from './story-kit.js?v=8300827947db';
+import {createKit,controller} from './story-kit.js?v=01a6058fd2c5';
 import * as THREE from './vendor/three.module.js';
 export function createScene8(ctx){const k=createKit(ctx),{L,R,mat,hinge,cut,oval,smooth}=k;
  k.city(R,2.5,-2.45,.7);const folk=[1.7,2.4,3.1].map((x,i)=>k.actor(R,x,-1.1,i===1?.25:.34,'sailor',0xf0d2a3));

@@ -81,3 +81,9 @@ h1{font-weight:400;letter-spacing:-.025em}#narration{line-height:1.65}
 @media(max-width:360px){.controls{gap:10px;padding-inline:12px}.actions{gap:10px}#pause{width:42.12px;height:42.12px;min-height:42.12px}.scrubber{padding-left:10px;column-gap:6px}}
 
 @media(max-width:360px){#replay{width:44px;min-height:44px}.replay-disc{width:44px;height:44px}.replay-disc svg{width:26px;height:26px}}
+
+/* User-supplied logo, preserving its transparent artwork and aspect ratio. */
+.brand{display:block;width:250px;height:70px;overflow:hidden;position:relative;flex-shrink:0}
+.brand-logo{display:block;width:100%;height:auto;position:absolute;left:0;top:50%;transform:translateY(-50%)}
+@media(max-width:600px){.brand{width:190px;height:60px}}
+@media(max-width:360px){.brand{width:170px}}

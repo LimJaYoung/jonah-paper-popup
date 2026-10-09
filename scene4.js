@@ -1,4 +1,4 @@
-import {createKit,controller} from './story-kit.js?v=8300827947db';
+import {createKit,controller} from './story-kit.js?v=01a6058fd2c5';
 export function createScene4(ctx){const k=createKit(ctx),{L,R,mat,hinge,oval,smooth}=k;k.waves();
  const f=k.fish(R,1.35,-1.0,.92),a=k.actor(L,-1.5,1.1,.58);
  const bubbles=Array.from({length:6},(_,i)=>{const g=hinge(L,-2.3+i*.25,.7);oval(g,0,0,.045,.06,mat('#c4edf1'));return g;});
