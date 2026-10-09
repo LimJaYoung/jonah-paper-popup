@@ -107,10 +107,41 @@ setupStory=async()=>{
  // A small flat paper harbor and dock, kept secondary to the city.
  const harbor=new THREE.Mesh(new THREE.CircleGeometry(.94,40),new THREE.MeshStandardMaterial({map:grain('#75b9bb'),roughness:1}));harbor.rotation.x=-Math.PI/2;harbor.position.set(-3,.075,-.9);storyLeft.add(harbor);
  for(let i=0;i<5;i++)box(.23,.035,.85,cream,-2.65+i*.2,.11,-.4,storyLeft);
- // Paths are paper strips with a low scored fold; each belongs to its own leaf.
- const paths=[];
- function pathStrip(parent,x,z,length,angle){const pivot=new THREE.Group();pivot.position.set(x,.095,z);pivot.rotation.y=angle;parent.add(pivot);const m=box(.7,.018,length,new THREE.MeshStandardMaterial({map:grain('#f7eccf'),roughness:1}),0,0,-length/2,pivot);paths.push(pivot);return m;}
- pathStrip(storyRight,.33,2.3,1.45,0);pathStrip(storyRight,.34,.9,2.9,-.72);pathStrip(storyLeft,-.04,.9,3.15,.9);
+ // One continuous, hand-cut Y silhouette, split only at the book's crease.
+ const road=new THREE.Shape();
+ const move=(x,z)=>road.moveTo(x,-z),line=(x,z)=>road.lineTo(x,-z);
+ const curve=(a,b,c,d,e,f)=>road.bezierCurveTo(a,-b,c,-d,e,-f);
+ move(.55,3.0);line(1.65,3.0);
+ curve(.8,2.7,.4,2.35,.7,1.7);
+ curve(1.05,1.05,2.8,-.1,2.65,-1.16);
+ line(1.95,-1.16);
+ curve(1.97,-.35,1.15,.3,.4,.65);
+ curve(-.4,1.05,-1.45,.48,-1.78,-.24);
+ line(-2.44,-.24);
+ curve(-2.35,.62,-1.4,1.55,-.12,1.67);
+ curve(-.05,2.35,.12,2.7,.55,3.0);
+ road.closePath();
+ const wholeRoad=new THREE.ExtrudeGeometry(road,{depth:.018,bevelEnabled:false,curveSegments:40});
+ wholeRoad.rotateX(-Math.PI/2);wholeRoad.translate(0,.077,0);
+ const pathMat=new THREE.MeshStandardMaterial({map:grain('#f5e4bd'),roughness:1,bumpMap:creamMap,bumpScale:.018,side:THREE.DoubleSide});
+ // Clip triangles at x=0 so both halves remain attached to their actual leaf.
+ function roadHalf(sign,parent){
+  const pos=wholeRoad.attributes.position,out=[],uvs=[];
+  for(let i=0;i<pos.count;i+=3){
+   let polygon=[0,1,2].map(j=>new THREE.Vector3().fromBufferAttribute(pos,i+j));
+   const clipped=[];
+   for(let j=0;j<polygon.length;j++){
+    const a=polygon[j],b=polygon[(j+1)%polygon.length],insideA=sign*a.x>=0,insideB=sign*b.x>=0;
+    if(insideA)clipped.push(a);
+    if(insideA!==insideB)clipped.push(a.clone().lerp(b,-a.x/(b.x-a.x)));
+   }
+   for(let j=1;j<clipped.length-1;j++)for(const v of [clipped[0],clipped[j],clipped[j+1]]){out.push(v.x,v.y,v.z);uvs.push(v.x/3,v.z/3);}
+  }
+  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(out,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geometry.computeVertexNormals();
+  const mesh=new THREE.Mesh(geometry,pathMat);mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);
+ }
+ roadHalf(-1,storyLeft);roadHalf(1,storyRight);wholeRoad.dispose();
+ const harborRoute=new THREE.CubicBezierCurve3(new THREE.Vector3(.35,0,1.25),new THREE.Vector3(-.7,0,1.1),new THREE.Vector3(-1.85,0,.72),new THREE.Vector3(-2.1,0,-.1));
  const hero=add('jonah',storyRight,{x:.35,z:1.25,w:1.2,h:2.15,direction:-1,delay:1.55,lift:.045});
  // Split the existing texture into articulated paper parts; no replacement face.
  const source=hero.children[0],baseGeo=source.geometry,uv=baseGeo.attributes.uv;
@@ -200,10 +231,10 @@ setupStory=async()=>{
   let unfold=turning?incoming*3:story.unfold*3;
   if(story.phase==='reopen')unfold=3;
   for(const it of newPieces){const a=smooth(it.delay,it.delay+1,unfold)*smooth(it.delay/8,.95,progress);it.pivot.rotation.x=it.direction*Math.PI/2*(1-a);}
-  for(const path of paths)path.rotation.x=-.18*(1-smooth(.7,1.7,unfold));
   const t=story.narrative,walking=story.phase==='walk',atPort=story.phase==='arrived';
   const turnBody=t<4?smooth(0,3,t)*.17:t<10?.17:THREE.MathUtils.lerp(.17,-.42,smooth(11,14,t));
-  const harborHeading=Math.atan2(-2.1-.35,-.1-1.25);
+  const routeProgress=smooth(0,1,story.walk),routePoint=harborRoute.getPoint(routeProgress),routeTangent=harborRoute.getTangent(routeProgress);
+  const harborHeading=Math.atan2(routeTangent.x,routeTangent.z);
   const facing=walking?THREE.MathUtils.lerp(-.42,harborHeading,smooth(0,.65,story.time)):atPort?harborHeading:turnBody;
   body.rotation.y=facing*smooth(.4,1,progress)*smooth(0,2.5,unfold);
   const stepping=walking&&story.time>.65&&story.walk<1;
@@ -216,7 +247,7 @@ setupStory=async()=>{
   head.rotation.y=t>=10&&t<14?Math.sin((t-10)*3)*.17:0;
   head.rotation.z=t>=7&&t<10?Math.sin((t-7)*1.2)*.06:0;
   footL.rotation.x=stepping?Math.sin((story.time-.65)*10)*.55:0;footR.rotation.x=stepping?-Math.sin((story.time-.65)*10)*.55:0;
-  hero.position.x=THREE.MathUtils.lerp(.35,-2.1,smooth(0,1,story.walk));hero.position.z=THREE.MathUtils.lerp(1.25,-.1,smooth(0,1,story.walk));
+  hero.position.x=routePoint.x;hero.position.z=routePoint.z;
   // On an open book both pages are coplanar; reparent the walking paper to
   // the left leaf at the crease so closing also keeps it on its destination.
   const host=hero.position.x<0?storyLeft:storyRight;if(hero.parent!==host){host.add(hero);newPieces.find(p=>p.pivot===hero).parent=host;}
