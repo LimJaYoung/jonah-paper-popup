@@ -1,12 +1,12 @@
 const titles=['큰 물고기가 나타났어요','하나님, 제 기도를 들어주세요','다시 시작할 기회','니느웨 사람들이 달라졌어요','하나님은 모두를 아끼세요'];
-import {createScene4} from './scene4.js?v=782c8c2c88e9';
-import {createScene5} from './scene5.js?v=782c8c2c88e9';
-import {createScene6} from './scene6.js?v=782c8c2c88e9';
-import {createScene7} from './scene7.js?v=782c8c2c88e9';
-import {createScene8} from './scene8.js?v=782c8c2c88e9';
+import {createScene4} from './scene4.js?v=f4cc8ff5f497';
+import {createScene5} from './scene5.js?v=f4cc8ff5f497';
+import {createScene6} from './scene6.js?v=f4cc8ff5f497';
+import {createScene7} from './scene7.js?v=f4cc8ff5f497';
+import {createScene8} from './scene8.js?v=f4cc8ff5f497';
 import * as THREE from './vendor/three.module.js';
-import {createStorm} from './scene3.js?v=782c8c2c88e9';
-import {createVoyage} from './scene2.js?v=782c8c2c88e9';
+import {createStorm} from './scene3.js?v=f4cc8ff5f497';
+import {createVoyage} from './scene2.js?v=f4cc8ff5f497';
 const stage=document.querySelector('#stage'),slider=document.querySelector('#progress');
 const scene=new THREE.Scene();
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
@@ -107,7 +107,7 @@ const smooth=(a,b,v)=>{const t=THREE.MathUtils.clamp((v-a)/(b-a),0,1);return t*t
 function apply(p,time=0){whaleLeft.rotation.set(0,-Math.PI*(1-smooth(.12,.96,p)),0);leftHinge.rotation.z=-Math.PI*(1-p);updateCoverBinding(leftHinge.rotation.z);updatePageBinding(leftHinge.rotation.z);for(const it of openingPieces){const unfold=smooth(it.delay,.94,p);const sway=(reduce?0:Math.sin(time*.65+it.phase)*.012)*smooth(.94,1,p);it.pivot.rotation.x=it.direction*(Math.PI/2*(1-unfold)+sway);}
  slider.value=Math.round(p*1000);slider.style.setProperty('--fill',`${p*100}%`);document.querySelector('#percentage').value=`${Math.round(p*100)}%`;document.querySelector('#state-label').textContent=p<.001?'닫힌 책':p>.999?(['펼쳐진 바다','펼쳐진 마을','잔잔한 출항','거센 바람과 커다란 파도',...titles][story.scene]):'펼쳐지는 중';}
 function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;const distance=Math.max(w<=600?0:15.5,13.4/(2*Math.tan(THREE.MathUtils.degToRad(16))*camera.aspect));camera.position.copy(target).add(new THREE.Vector3(0,.88,2.2).normalize().multiplyScalar(distance));camera.lookAt(target);camera.updateProjectionMatrix();}window.addEventListener('resize',resize);new ResizeObserver(resize).observe(stage);resize();
-function buttonPause(){document.querySelector('#pause').innerHTML=paused?'계속 재생 <span>▷</span>':'일시 정지 <span>Ⅱ</span>';document.querySelector('#pause').setAttribute('aria-label',paused?'움직임 계속 재생':'움직임 일시 정지');}
+function buttonPause(){const control=document.querySelector('#pause');const ready=story.scene===0&&progress===0&&targetProgress===0&&!replaying;const mode=paused||ready?'play':'pause';const label=ready?'책 펼치기':paused?'계속 재생':'일시 정지';if(control.dataset.mode!==mode)control.dataset.mode=mode;if(control.getAttribute('aria-label')!==label){control.setAttribute('aria-label',label);control.title=label;}}
 // Story controller owns all inputs, including the original book controls.
 // initialization follows the story controller below
 function frame(now){const dt=Math.min((now-last)/1000,.05);last=now;if(!paused){swayTime+=dt;const diff=targetProgress-progress;progress+=Math.sign(diff)*Math.min(Math.abs(diff),dt/bookMotionDuration);if(replaying&&progress===0){targetProgress=1;replaying=false}}apply(progress,swayTime);updateStory(paused?0:dt);renderer.render(scene,camera);requestAnimationFrame(frame)}// animation starts after scene assets load
@@ -237,7 +237,7 @@ setupStory=async()=>{
   }
  };
  $('replay').onclick=()=>{if(locked()||ending)return;if(story.scene>=4){spreads[story.scene].reset();paused=false;buttonPause();return;}if(story.scene===3){storm.reset();targetProgress=1;replaying=false;paused=false;buttonPause();return;}if(story.scene===2){voyage.reset();targetProgress=1;replaying=false;paused=false;buttonPause();return;}targetProgress=0;replaying=true;paused=false;if(story.scene===1){resetAct();story.phase='reopen';}buttonPause()};
- $('pause').onclick=()=>{paused=!paused;buttonPause()};
+ $('pause').onclick=()=>{if(story.scene===0&&progress===0&&targetProgress===0&&!replaying){$('open').click();return;}paused=!paused;buttonPause()};
  slider.addEventListener('input',()=>{if(locked())return;progress=targetProgress=Number(slider.value)/1000;replaying=false;apply(progress,swayTime)});
  function project(el,obj,x,y,z){const v=obj.localToWorld(new THREE.Vector3(x,y,z)).project(camera);el.style.left=`${(v.x*.5+.5)*stage.clientWidth}px`;el.style.top=`${(-v.y*.5+.5)*stage.clientHeight}px`;}
  function phase(next){story.phase=next;story.time=0;}
@@ -307,7 +307,7 @@ setupStory=async()=>{
   cityLabel.hidden=portLabel.hidden=!(active&&unfold>=2.8);speech.hidden=!(active&&t>=12&&!walking&&!atPort);
   text($('story-hint'),chapterActive?spreads[story.scene].hint():stormActive?(storm.state.phase==='end'?'다음 · 큰 물고기를 만나요.':storm.hint()):voyageActive?voyage.hint():atPort?'다음 · 항구에서 배에 올라요':locked()?'종이 이야기가 펼쳐지고 있어요…':'');
   for(const id of ['replay','progress'])$(id).disabled=locked()||!!ending;
-  const movingBook=Math.abs(targetProgress-progress)>.001;
+  const movingBook=Math.abs(targetProgress-progress)>.001;buttonPause();
   $('open').title=progress<.999?'책 펼치기':story.scene===0?'다음 페이지':story.scene===3?(storm.state.phase==='end'?'다음 페이지':'이야기가 이어지고 있어요'):story.scene===2?(voyage.canNext()?'승선 이야기 이어가기':'이야기가 이어지고 있어요'):atPort?'다음 페이지':walking?'요나가 항구로 걷고 있어요':'다음 이야기 구간';
   $('open').disabled=!!ending||locked()||movingBook||(progress>.999&&(story.scene===1&&!['narrate','arrived'].includes(story.phase)||story.scene===2&&!voyage.canNext()||story.scene===3&&storm.state.phase!=='end'&&!storm.canNext()||story.scene>=4&&(!spreads[story.scene].canNext()||story.scene===8&&spreads[8].state.phase==='end')));
   
