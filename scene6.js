@@ -1,4 +1,4 @@
-import {createKit,controller} from './story-kit.js?v=8301d7acc448';
+import {createKit,controller} from './story-kit.js?v=484890af4aa3';
 import * as THREE from './vendor/three.module.js';
 export function createScene6(ctx){const k=createKit(ctx),{L,R,mat,hinge,smooth}=k;
  for(let n=0;n<2;n++)k.add('waves',L,{x:-2.2,z:n?1.7:-1.9,w:4.2,h:n?.7:1.2,direction:n?-1:1});
