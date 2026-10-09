@@ -1,3 +1,4 @@
+import {createVessel} from './vessel.js';
 import * as THREE from './vendor/three.module.js';
 
 // Uses the same paper renderer, actor artwork and page-local coordinate system.
@@ -28,39 +29,9 @@ export function createVoyage({left,right,paper,pieces,assets,cream,grain,box,act
  for(const x of [-1,-.15,1])box(.09,.48,.09,wood,x,.22,.4,dock);
  const plank=new THREE.Group();plank.position.set(-.55,.61,.8);L.add(plank);
  box(.9,.035,.4,wood,.45,0,0,plank);box(.9,.008,.025,gold,.45,.025,.18,plank);
- const ship=new THREE.Group();ship.position.set(1.4,0,.65);R.add(ship);
- const boat=add('boat',ship,{w:3.05,h:2.46,direction:-1,delay:1,lift:.055});
- // Split the original boat artwork at the hull edge: the sail can tilt at its foot.
- const original=[boat.children[0],boat.children[1]],sourceGeo=original[0].geometry,sourceUV=sourceGeo.attributes.uv;
- boat.clear();
- function boatLayer(y0,y1,parent,anchorY=0,frontOnly=false){
-  const geo=new THREE.PlaneGeometry(3.05,y1-y0);geo.translate(0,(y0+y1)/2-anchorY,0);const uv=geo.attributes.uv;
-  for(let i=0;i<uv.count;i++)uv.setXY(i,THREE.MathUtils.lerp(sourceUV.getX(0),sourceUV.getX(1),uv.getX(i)),THREE.MathUtils.lerp(sourceUV.getY(2),sourceUV.getY(0),(y0+(y1-y0)*uv.getY(i))/2.46));
-  for(const src of frontOnly?[original[0]]:original){const m=new THREE.Mesh(geo,src.material);m.position.z=frontOnly?.3:src.position.z;m.castShadow=true;m.receiveShadow=true;m.customDepthMaterial=src.customDepthMaterial;parent.add(m);}
- }
- boatLayer(0,.82,boat);
- const sail=new THREE.Group();sail.position.y=.82;boat.add(sail);boatLayer(.82,2.46,sail,.82);
- boatLayer(0,.82,boat,0,true);
- // Build articulated actors from the same existing six paper joints.
- function actor(parent,size,skin){
-  const root=new THREE.Group(),body=actorTemplate.clone(true);root.add(body);root.scale.setScalar(size);parent.add(root);
-  body.rotation.set(0,0,0);body.children.forEach(p=>p.rotation.set(0,0,0));
-  if(skin)body.traverse(m=>{if(!m.isMesh)return;const old=m.material.side===THREE.FrontSide?assets.jonah:assets['jonah-back'],a=assets.sailor; m.geometry=m.geometry.clone();const uv=m.geometry.attributes.uv;
-   for(let i=0;i<uv.count;i++){const u=(uv.getX(i)-old.x0/old.iw)/((old.x1-old.x0)/old.iw),v=(uv.getY(i)-(1-old.y1/old.ih))/((old.y1-old.y0)/old.ih);uv.setXY(i,THREE.MathUtils.lerp(a.x0/a.iw,a.x1/a.iw,u),THREE.MathUtils.lerp(1-a.y1/a.ih,1-a.y0/a.ih,v));}
-   m.material=m.material.clone();m.material.map=a.tex;m.material.color.set(skin);m.customDepthMaterial=new THREE.MeshDepthMaterial({map:a.tex,alphaTest:.94,depthPacking:THREE.RGBADepthPacking,side:THREE.DoubleSide});
-  });
-  return {root,body,head:body.children[0],armL:body.children[1],armR:body.children[2],footL:body.children[4],footR:body.children[5]};
- }
+ const {ship,boat,sail,actor,sailorA,sailorB,cabin,cover}=createVessel({R,add,assets,cream,grain,box,actorTemplate});
  const heroHinge=new THREE.Group();heroHinge.position.set(-1,.62,.85);L.add(heroHinge);
  const jonah=actor(heroHinge,.58); // original face, clothing, rear and shoulder hinges
- const sailorA=actor(boat,.43,0xffffff),sailorB=actor(boat,.4,0xe6d8a6);
- sailorA.root.position.set(.45,.62,.15);sailorB.root.position.set(1.01,.6,.14);
- // Layered entry with an opaque hinged cover. Jonah stays behind real paper.
- const cabin=new THREE.Group();cabin.position.set(-.62,.58,.18);boat.add(cabin);
- box(.76,.8,.025,dark,0,.4,0,cabin);
- box(.09,.84,.05,wood,-.415,.4,.065,cabin);box(.09,.84,.05,wood,.415,.4,.065,cabin);box(.94,.12,.05,cream,0,.85,.065,cabin);
- const cover=new THREE.Group();cover.position.set(-.38,0,.09);cabin.add(cover);
- box(.76,.8,.025,cream,.38,.4,0,cover);box(.06,.06,.018,gold,.64,.38,.025,cover);
  const sleep=document.createElement('div');sleep.className='scene-label';sleep.textContent='쿨…';sleep.hidden=true;stage.appendChild(sleep);
  const hit=document.createElement('button');hit.id='voyage-boat';hit.className='boat-target';hit.setAttribute('aria-label','배를 눌러 요나 승선');hit.title='배를 눌러 요나의 여행을 이어가 보세요.';hit.hidden=true;stage.appendChild(hit);
  const lines=[
@@ -137,5 +108,5 @@ export function createVoyage({left,right,paper,pieces,assets,cream,grain,box,act
  }
  function caption(){return ['intro','ready'].includes(state.phase)?lines[0]:['boarding','paid','retract'].includes(state.phase)?lines[1]:state.phase==='sailing'?lines[2]:state.phase==='end'?lines[4]:lines[3];}
  function hint(){return state.phase==='ready'?'배를 눌러 요나의 여행을 이어가 보세요.':state.phase==='end'?'다음 이야기는 폭풍 장면이에요.':' '}
- reset();return {L,R,state,reset,next,update,caption,hint,hideUI(){sleep.hidden=hit.hidden=true;},canNext(){return ['intro','ready'].includes(state.phase);}};
+ reset();return {L,R,state,reset,next,update,caption,hint,hideUI(){sleep.hidden=hit.hidden=true;},canNext(){return ['intro','ready','end'].includes(state.phase);}};
 }

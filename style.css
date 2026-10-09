@@ -8,3 +8,4 @@
 .page-arrow span{font:44px/1 Georgia,serif;margin:0}.page-arrow small{font:12px/1.5 'Apple SD Gothic Neo',sans-serif}.page-arrow:disabled{opacity:.3}.page-arrow:hover:not(:disabled){background:#e8efe3;border-color:#648e80}.actions{gap:16px}.actions button{flex:1}
 @media(max-width:600px){.page-arrow{top:85%;width:46px;min-height:64px;border-radius:24px}.page-arrow span{font-size:32px}.page-arrow small{font-size:10px}.page-arrow-left{left:10px}.page-arrow-right{right:10px}}
 #voyage-boat{width:clamp(160px,18vw,260px);height:clamp(140px,16vw,230px);border-color:#bc953c55}
+.storm-dialogue{font:26px/1.5 'Apple SD Gothic Neo',sans-serif;color:#7d584b;background:#fff7e8;border:1px solid #d8c7a1;border-radius:16px;padding:10px 18px;margin:12px auto 0;max-width:1020px;word-break:keep-all;overflow-wrap:anywhere}@media(max-width:600px){.storm-dialogue{font-size:24px}}
