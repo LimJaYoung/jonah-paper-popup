@@ -1,5 +1,5 @@
 import * as THREE from './vendor/three.module.js';
-import {createKit,controller} from './story-kit.js?v=3ea1974a6ec2';
+import {createKit,controller} from './story-kit.js?v=63088aaa58c0';
 export function createScene4(ctx){const k=createKit(ctx),{L,R,mat,hinge,oval,smooth}=k;k.waves();
  // Three paper-cut seaweed silhouettes, rooted on their own page hinges.
  const seaweed=[];

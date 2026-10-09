@@ -1,5 +1,5 @@
 import * as THREE from './vendor/three.module.js';
-import {createVessel} from './vessel.js?v=3ea1974a6ec2';
+import {createVessel} from './vessel.js?v=63088aaa58c0';
 
 export function createStorm({left,right,paper,pieces,assets,cream,grain,box,actorTemplate,stage,smooth}){
  const L=new THREE.Group(),R=new THREE.Group();left.add(L);right.add(R);
