@@ -1,12 +1,12 @@
 const titles=['큰 물고기가 나타났어요','하나님, 제 기도를 들어주세요','다시 시작할 기회','니느웨 사람들이 달라졌어요','하나님은 모두를 아끼세요'];
-import {createScene4} from './scene4.js?v=7a855cc3ec35';
-import {createScene5} from './scene5.js?v=7a855cc3ec35';
-import {createScene6} from './scene6.js?v=7a855cc3ec35';
-import {createScene7} from './scene7.js?v=7a855cc3ec35';
-import {createScene8} from './scene8.js?v=7a855cc3ec35';
+import {createScene4} from './scene4.js?v=543f03cb9d7b';
+import {createScene5} from './scene5.js?v=543f03cb9d7b';
+import {createScene6} from './scene6.js?v=543f03cb9d7b';
+import {createScene7} from './scene7.js?v=543f03cb9d7b';
+import {createScene8} from './scene8.js?v=543f03cb9d7b';
 import * as THREE from './vendor/three.module.js';
-import {createStorm} from './scene3.js?v=7a855cc3ec35';
-import {createVoyage} from './scene2.js?v=7a855cc3ec35';
+import {createStorm} from './scene3.js?v=543f03cb9d7b';
+import {createVoyage} from './scene2.js?v=543f03cb9d7b';
 const stage=document.querySelector('#stage'),slider=document.querySelector('#progress');
 const scene=new THREE.Scene();
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
@@ -21,8 +21,20 @@ const cream=new THREE.MeshStandardMaterial({map:creamMap,roughness:1,bumpMap:cre
 function box(w,h,d,mat,x,y,z,parent){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m}
 const book=new THREE.Group();scene.add(book);const left=new THREE.Group(),right=new THREE.Group();left.name='left-page-hinge';right.name='right-page';const leftHinge=new THREE.Group();leftHinge.position.y=.5;left.position.y=-.16;right.position.y=.34;leftHinge.add(left);book.add(leftHinge,right);
 const pw=4.65,pd=6.5;for(const [leaf,sign] of [[left,-1],[right,1]]){box(pw+.14,.13,pd+.2,coverMat,sign*(pw/2),-.22,0,leaf);for(let k=0;k<12;k++)box(pw-.045-k*.004,.014,pd-.09-k*.004,k%3===0?new THREE.MeshStandardMaterial({color:0xd6c49d,roughness:1}):cream,sign*(pw/2),-.15+k*.013,0,leaf);box(pw-.12,.035,pd-.18,cream,sign*pw/2,.027,0,leaf);}
-// Foil artwork lives on the outside of the hinged cover.
-const cc=document.createElement('canvas');cc.width=768;cc.height=1024;const cx=cc.getContext('2d');cx.fillStyle='#dcb65f';cx.textAlign='center';cx.font='24px Georgia';cx.fillText('J O N A H',384,395);cx.font='14px Georgia';cx.fillText('A PAPER OCEAN',384,434);cx.strokeStyle='#dfb85a';cx.lineWidth=3;for(let j=0;j<4;j++){cx.beginPath();for(let i=0;i<=210;i++){const x=280+i,y=535+j*18+Math.sin(i/22+j)*9;i?cx.lineTo(x,y):cx.moveTo(x,y)}cx.stroke()}cx.font='28px Georgia';cx.fillText('✧',384,326);cx.lineWidth=1;cx.strokeRect(47,55,674,914);const foilTex=new THREE.CanvasTexture(cc);foilTex.colorSpace=THREE.SRGBColorSpace;const foil=new THREE.Mesh(new THREE.PlaneGeometry(pw-.2,pd-.15),new THREE.MeshBasicMaterial({map:foilTex,transparent:true,side:THREE.DoubleSide}));foil.rotation.x=Math.PI/2;foil.rotation.z=Math.PI;foil.position.set(-pw/2,-.288,0);left.add(foil);
+// Cover typography and illustration remain attached to the outside hinge.
+await document.fonts.load('96px Jua');
+const prayerArt=new Image();prayerArt.src='./assets/jonah-prayer-cover.png';await prayerArt.decode();
+const cc=document.createElement('canvas');cc.width=768;cc.height=1024;
+const cx=cc.getContext('2d');cx.textAlign='center';
+cx.strokeStyle='#dfb85a';cx.lineWidth=3;cx.strokeRect(40,45,688,934);
+cx.fillStyle='#fff0c7';cx.font='96px Jua';
+cx.fillText('어린이',384,178);cx.fillText('성경동화',384,288);
+const artScale=Math.min(610/prayerArt.width,610/prayerArt.height);
+const artWidth=prayerArt.width*artScale,artHeight=prayerArt.height*artScale;
+cx.drawImage(prayerArt,(768-artWidth)/2,330+(610-artHeight)/2,artWidth,artHeight);
+const foilTex=new THREE.CanvasTexture(cc);foilTex.colorSpace=THREE.SRGBColorSpace;
+const foil=new THREE.Mesh(new THREE.PlaneGeometry(pw-.2,pd-.15),new THREE.MeshBasicMaterial({map:foilTex,transparent:true,side:THREE.DoubleSide}));
+foil.rotation.x=Math.PI/2;foil.rotation.z=Math.PI;foil.position.set(-pw/2,-.288,0);left.add(foil);
 // Continuous flexible binding around the fixed spine axis. Both endpoints
 // overlap their respective covers/pages, including while the left leaf rotates.
 function bindingStrip(name, inset, depthFromAxis, thickness, length, material) {
