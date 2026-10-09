@@ -23,7 +23,7 @@ export function createStorm({left,right,paper,pieces,assets,cream,grain,box,acto
  const crates=[0,1].map(i=>{const p=new THREE.Group();boat.add(p);box(.27,.26,.045,wood,0,.13,0,p);box(.035,.24,.01,cream,0,.13,.03,p);box(.25,.025,.01,cream,0,.13,.03,p);return p;});
  const splash=new THREE.Group();R.add(splash);splash.position.set(.75,.12,2.5);cutout([[-.35,0],[-.5,.32],[-.2,.2],[-.1,.55],[.06,.2],[.3,.4],[.26,.1],[.45,0]],new THREE.MeshStandardMaterial({map:grain('#d5eff0'),roughness:1}),splash);
  const warm=new THREE.PointLight(0xffd58e,0,8,2);warm.position.set(0,3,0);R.add(warm);
- const dialogue=document.createElement('div');dialogue.id='storm-dialogue';dialogue.className='storm-dialogue';dialogue.hidden=true;document.getElementById('narration').after(dialogue);
+ const dialogue=document.createElement('div');dialogue.id='storm-dialogue';dialogue.className='storm-dialogue';dialogue.hidden=true;dialogue.setAttribute('role','status');dialogue.setAttribute('aria-live','polite');stage.appendChild(dialogue);
  const sleep=document.createElement('div');sleep.className='scene-label';sleep.textContent='쿨…';sleep.hidden=true;stage.appendChild(sleep);
  const steps=[
   ['wind',9,'그때, 하나님이 바다에 큰 바람을 보내셨어요. 잔잔하던 바다에 거센 폭풍이 일었어요.'],

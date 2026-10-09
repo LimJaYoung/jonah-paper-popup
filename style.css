@@ -8,6 +8,9 @@
 .page-arrow span{font:44px/1 Georgia,serif;margin:0}.page-arrow small{font:12px/1.5 'Apple SD Gothic Neo',sans-serif}.page-arrow:disabled{opacity:.3}.page-arrow:hover:not(:disabled){background:#e8efe3;border-color:#648e80}.actions{gap:16px}.actions button{flex:1}
 @media(max-width:600px){.page-arrow{top:85%;width:46px;min-height:64px;border-radius:24px}.page-arrow span{font-size:32px}.page-arrow small{font-size:10px}.page-arrow-left{left:10px}.page-arrow-right{right:10px}}
 #voyage-boat{width:clamp(160px,18vw,260px);height:clamp(140px,16vw,230px);border-color:#bc953c55}
-.storm-dialogue{font:13px/1.5 'Apple SD Gothic Neo',sans-serif;color:#7d584b;background:#fff7e8;border:1px solid #d8c7a1;border-radius:16px;padding:10px 18px;margin:12px auto 0;max-width:1020px;word-break:keep-all;overflow-wrap:anywhere}@media(max-width:600px){.storm-dialogue{font-size:12px}}
+/* Character dialogue floats in the upper-right space above the book. */
+.storm-dialogue{position:absolute;z-index:3;top:8%;left:calc(50% + clamp(70px,12vw,190px));transform:translateX(-50%);width:clamp(220px,24vw,320px);max-width:calc(100% - 40px);font:13px/1.65 'Apple SD Gothic Neo',sans-serif;text-align:left;color:#7d584b;background:#fff7e8;border:1px solid #d8c7a1;border-radius:20px;padding:14px 18px;margin:0;word-break:keep-all;overflow-wrap:anywhere;box-shadow:0 5px 18px #6e756a0c;pointer-events:none}
+.storm-dialogue::after{content:'';position:absolute;bottom:-9px;left:25%;width:16px;height:16px;background:#fff7e8;border-right:1px solid #d8c7a1;border-bottom:1px solid #d8c7a1;transform:skew(-15deg) rotate(45deg)}
+@media(max-width:600px){.storm-dialogue{top:2%;left:50%;width:min(300px,80vw);font-size:12px;padding:12px 16px}.storm-dialogue::after{left:60%}}
 
 #end-actions{display:flex;justify-content:center;gap:12px;margin:12px 0}#end-actions[hidden]{display:none}#end-actions button{border:1px solid #9cae9f;border-radius:20px;padding:10px 22px;background:#f4eddc;color:#245b5c;cursor:pointer}#end-actions button:disabled{opacity:.45}
