@@ -7,3 +7,4 @@
 .page-arrow-left{left:max(16px,calc(50% - 510px))}.page-arrow-right{right:max(16px,calc(50% - 510px))}
 .page-arrow span{font:44px/1 Georgia,serif;margin:0}.page-arrow small{font:12px/1.5 'Apple SD Gothic Neo',sans-serif}.page-arrow:disabled{opacity:.3}.page-arrow:hover:not(:disabled){background:#e8efe3;border-color:#648e80}.actions{gap:16px}.actions button{flex:1}
 @media(max-width:600px){.page-arrow{top:85%;width:46px;min-height:64px;border-radius:24px}.page-arrow span{font-size:32px}.page-arrow small{font-size:10px}.page-arrow-left{left:10px}.page-arrow-right{right:10px}}
+#voyage-boat{width:clamp(160px,18vw,260px);height:clamp(140px,16vw,230px);border-color:#bc953c55}
