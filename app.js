@@ -132,21 +132,18 @@ setupStory=async()=>{
 
  function label(id,text,cls='scene-label'){const el=document.createElement('div');el.id=id;el.className=cls;el.textContent=text;stage.appendChild(el);return el}
  const cityLabel=label('city-label','니느웨'),portLabel=label('port-label','항구'),speech=label('speech','나는 가기 싫은데…');
- const hit=document.createElement('button');hit.className='boat-target';hit.id='boat-target';hit.setAttribute('aria-label','항구의 배를 눌러 요나 이동');hit.innerHTML='<span>배를 눌러 보세요</span>';stage.appendChild(hit);
  const lines=['어느 날, 하나님이 요나를 부르셨어요.','요나야, 니느웨로 가렴. 사람들이 나쁜 행동을 멈추도록 말해 주렴.','하지만 요나는 니느웨에 가고 싶지 않았어요.','요나는 반대쪽으로 가는 배를 타기로 했어요.'];
  function say(text){if($('narration').textContent!==text)$('narration').textContent=text;}
  const locked=()=>['turn','return-turn'].includes(story.phase);
  function resetAct(){story.narrative=0;story.walk=0;story.unfold=0;hero.position.set(.35,.11,1.25);body.rotation.set(0,0,0);head.rotation.set(0,0,0);footL.rotation.set(0,0,0);footR.rotation.set(0,0,0);say('');}
  function begin(){if(story.scene!==0||locked()||progress<.999)return;resetAct();mountTurn();story.phase='turn';story.time=0;replaying=false;paused=false;buttonPause();}
  function previous(){if(locked()||progress<.999)return;if(story.scene===0){targetProgress=0;replaying=false;paused=false;buttonPause();return;}mountTurn();story.phase='return-turn';story.time=0;replaying=false;paused=false;targetProgress=1;buttonPause();}
- function walk(){if(story.phase!=='ready'||progress<.999||paused)return;story.phase='walk';story.time=0;}
- $('previous').onclick=previous;hit.onclick=walk;
+ $('previous').onclick=previous;
  // A single primary action connects the closed book and every available spread.
  $('open').onclick=()=>{
   if(locked()||Math.abs(targetProgress-progress)>.001)return;
   if(progress<.999){targetProgress=1;replaying=false;paused=false;buttonPause();}
   else if(story.scene===0)begin();
-  else if(story.phase==='ready')walk();
  };
  $('replay').onclick=()=>{if(locked())return;targetProgress=0;replaying=true;paused=false;if(story.scene===1){resetAct();story.phase='reopen';}buttonPause()};
  $('pause').onclick=()=>{paused=!paused;buttonPause()};
@@ -160,7 +157,7 @@ setupStory=async()=>{
    if(back){resetAct();phase('idle');}else{story.unfold=1;phase('narrate');}
   }
   if(story.phase==='reopen'&&progress>.999){story.unfold=1;phase('narrate');}
-  if(story.phase==='narrate'&&progress>.999){story.narrative+=dt;if(story.narrative>=15)phase('ready');}
+  if(story.phase==='narrate'&&progress>.999){story.narrative+=dt;if(story.narrative>=15)phase('walk');}
   if(story.phase==='walk'){story.walk=Math.min(1,story.time/2.8);if(story.walk===1){phase('arrived');say(lines[3]);}}
   const returning=story.phase==='return-turn',turning=locked();
   const travel=turning?smooth(0,turnDuration,story.time):0;
@@ -197,24 +194,22 @@ setupStory=async()=>{
   const host=hero.position.x<0?storyLeft:storyRight;if(hero.parent!==host){host.add(hero);newPieces.find(p=>p.pivot===hero).parent=host;}
   const lightAmount=(story.scene===1||turning)?smooth(2.35,3,unfold)*smooth(.6,1,progress):0;light.intensity=lightAmount*3;glow.material.opacity=lightAmount;
   if(story.phase==='narrate')say(t<4?lines[0]:t<10?lines[1]:lines[2]);
-  if(story.phase==='ready')say(lines[2]);
   const active=story.scene===1&&progress>.999&&!turning;
   $('story-nav').hidden=story.scene!==1;$('narration').hidden=!active||['reopen'].includes(story.phase);
   $('previous').disabled=locked()||progress<.999||Math.abs(targetProgress-progress)>.001;
-  hit.hidden=!(active&&story.phase==='ready');hit.disabled=paused;
   cityLabel.hidden=portLabel.hidden=!(active&&unfold>=2.8);speech.hidden=!(active&&t>=12&&!walking&&!atPort);
-  text($('story-hint'),atPort?'씬 1 끝 · 요나가 항구에 도착했어요':story.phase==='ready'?'작은 배 또는 아래 ‘항구로 가기’를 눌러 보세요':locked()?'종이 이야기가 펼쳐지고 있어요…':'');
+  text($('story-hint'),atPort?'씬 1 끝 · 요나가 항구에 도착했어요':locked()?'종이 이야기가 펼쳐지고 있어요…':'');
   for(const id of ['replay','progress'])$(id).disabled=locked();
   const movingBook=Math.abs(targetProgress-progress)>.001;
-  text($('open'),locked()?'페이지 넘기는 중…':movingBook?(targetProgress>progress?'책 펼치는 중…':'책 닫는 중…'):progress<.999?'책 펼치기':story.scene===0?'다음페이지':story.phase==='ready'?'항구로 가기':atPort?'이야기 끝':walking?'항구로 걷는 중…':'이야기 재생 중…');
-  $('open').disabled=locked()||movingBook||(progress>.999&&story.scene===1&&(story.phase!=='ready'||paused));
+  text($('open'),locked()?'페이지 넘기는 중…':movingBook?(targetProgress>progress?'책 펼치는 중…':'책 닫는 중…'):progress<.999?'책 펼치기':story.scene===0?'다음페이지':atPort?'이야기 끝':walking?'항구로 걷는 중…':'이야기 재생 중…');
+  $('open').disabled=locked()||movingBook||(progress>.999&&story.scene===1);
   text(document.querySelector('h1'),story.scene===0?'종이 사이로, 바다가 피어나다.':'요나야, 니느웨로 가렴');
   text(document.querySelector('.intro'),story.scene===0?'책을 펼치면 시작되는 작은 모험':'하나의 부름, 두 갈래의 길');
   text(document.querySelector('.chapter'),story.scene===0?'오프닝 표지':'본문 씬 1');text($('scene-name'),story.scene===0?'바다 위의 요나':'요나야, 니느웨로 가렴');
   stage.setAttribute('aria-label',story.scene===0?'청록색 책이 열리며 파도와 배, 요나, 큰 물고기가 펼쳐지는 3D 종이 팝업북':'두 갈래 길 앞의 요나, 오른쪽 니느웨 성문과 왼쪽 작은 항구가 펼쳐진 종이 팝업북');
   if(turning)$('state-label').textContent=travel<.5?'페이지와 종이가 함께 접히는 중':'다음 페이지와 종이가 함께 펼쳐지는 중';
   stage.dataset.phase=story.phase;stage.dataset.scene=String(story.scene);stage.dataset.walk=String(story.walk);stage.dataset.oceanVisible=String(openingRight.visible);stage.dataset.pageAngle=turn.rotation.z.toFixed(3);stage.dataset.pageTurning=String(turn.visible);stage.dataset.unfold=unfold.toFixed(3);stage.dataset.oceanFold=ocean.toFixed(3);stage.dataset.artOnLeaf=String(openingRight.parent===turn&&storyLeft.parent===reverse);
-  scene.updateMatrixWorld(true);project(cityLabel,gate,0,2.45,0);project(portLabel,harborBoat,0,1.65,0);project(hit,harborBoat,0,.6,0);project(speech,hero,.15,2.4,0);
+  scene.updateMatrixWorld(true);project(cityLabel,gate,0,2.45,0);project(portLabel,harborBoat,0,1.65,0);project(speech,hero,.15,2.4,0);
  };
 };
 await setupStory();document.querySelector('#loading').remove();last=performance.now();requestAnimationFrame(frame);
