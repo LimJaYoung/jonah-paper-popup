@@ -1,12 +1,12 @@
 const titles=['큰 물고기가 나타났어요','하나님, 제 기도를 들어주세요','다시 시작할 기회','니느웨 사람들이 달라졌어요','하나님은 모두를 아끼세요'];
-import {createScene4} from './scene4.js?v=63088aaa58c0';
-import {createScene5} from './scene5.js?v=63088aaa58c0';
-import {createScene6} from './scene6.js?v=63088aaa58c0';
-import {createScene7} from './scene7.js?v=63088aaa58c0';
-import {createScene8} from './scene8.js?v=63088aaa58c0';
+import {createScene4} from './scene4.js?v=77e96b36aa37';
+import {createScene5} from './scene5.js?v=77e96b36aa37';
+import {createScene6} from './scene6.js?v=77e96b36aa37';
+import {createScene7} from './scene7.js?v=77e96b36aa37';
+import {createScene8} from './scene8.js?v=77e96b36aa37';
 import * as THREE from './vendor/three.module.js';
-import {createStorm} from './scene3.js?v=63088aaa58c0';
-import {createVoyage} from './scene2.js?v=63088aaa58c0';
+import {createStorm} from './scene3.js?v=77e96b36aa37';
+import {createVoyage} from './scene2.js?v=77e96b36aa37';
 const stage=document.querySelector('#stage'),slider=document.querySelector('#progress');
 const scene=new THREE.Scene();
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});
@@ -108,7 +108,7 @@ const pageTurnDuration=bookMotionDuration*2,endingFoldDuration=bookMotionDuratio
 const smooth=(a,b,v)=>{const t=THREE.MathUtils.clamp((v-a)/(b-a),0,1);return t*t*(3-2*t)};
 function apply(p,time=0){whaleLeft.rotation.set(0,-Math.PI*(1-smooth(.12,.96,p)),0);leftHinge.rotation.z=-Math.PI*(1-p);updateCoverBinding(leftHinge.rotation.z);updatePageBinding(leftHinge.rotation.z);for(const it of openingPieces){const unfold=smooth(it.delay,.94,p);const sway=(reduce?0:Math.sin(time*.65+it.phase)*.012)*smooth(.94,1,p);it.pivot.rotation.x=it.direction*(Math.PI/2*(1-unfold)+sway);}
  slider.value=Math.round(p*1000);slider.style.setProperty('--fill',`${p*100}%`);document.querySelector('#percentage').value=`${Math.round(p*100)}%`;document.querySelector('#state-label').textContent=p<.001?'닫힌 책':p>.999?(['펼쳐진 바다','펼쳐진 마을','잔잔한 출항','거센 바람과 커다란 파도',...titles][story.scene]):'펼쳐지는 중';}
-function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;const distance=Math.max(w<=600?0:15.5,13.4/(2*Math.tan(THREE.MathUtils.degToRad(16))*camera.aspect));camera.position.copy(target).add(new THREE.Vector3(0,.88,2.2).normalize().multiplyScalar(distance));camera.lookAt(target);camera.updateProjectionMatrix();}window.addEventListener('resize',resize);new ResizeObserver(resize).observe(stage);resize();
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;const distance=Math.max(window.matchMedia('(orientation:landscape) and (max-height:600px) and (max-width:1100px)').matches?11.5:w<=600?0:15.5,13.4/(2*Math.tan(THREE.MathUtils.degToRad(16))*camera.aspect));camera.position.copy(target).add(new THREE.Vector3(0,.88,2.2).normalize().multiplyScalar(distance));camera.lookAt(target);camera.updateProjectionMatrix();}window.addEventListener('resize',resize);new ResizeObserver(resize).observe(stage);resize();
 function buttonPause(){const control=document.querySelector('#pause');const ready=story.scene===0&&progress===0&&targetProgress===0&&!replaying;const mode=paused||ready?'play':'pause';const label=ready?'책 펼치기':paused?'계속 재생':'일시 정지';if(control.dataset.mode!==mode)control.dataset.mode=mode;if(control.getAttribute('aria-label')!==label){control.setAttribute('aria-label',label);control.title=label;}}
 // Story controller owns all inputs, including the original book controls.
 // initialization follows the story controller below
