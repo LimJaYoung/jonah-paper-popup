@@ -1,1 +1,174 @@
-:root{font-family:Georgia,'Noto Serif KR','Apple SD Gothic Neo',serif;color:#214b4e;background:#f7f2e8;font-synthesis:none}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 43%,#fffcf4 0,#f7f2e8 70%);min-height:100svh}header{height:85px;display:flex;align-items:center;justify-content:space-between;margin:0 5%;border-bottom:1px solid #214b4e18}.brand{color:inherit;text-decoration:none;font-family:'Apple SD Gothic Neo',sans-serif;font-size:13px;letter-spacing:.08em;display:flex;align-items:center;gap:10px}.mark{font-size:30px;color:#ba923d}.edition{font:10px Arial,sans-serif;letter-spacing:.2em;color:#738b88}.heading{text-align:center;padding-top:32px;position:relative;z-index:1;pointer-events:none}.eyebrow{font:11px 'Apple SD Gothic Neo',sans-serif;letter-spacing:.2em;color:#8b977e;margin:0 0 12px}h1{font-size:clamp(24px,3vw,38px);font-weight:500;letter-spacing:-.065em;margin:0}.intro{font:12px 'Apple SD Gothic Neo',sans-serif;color:#8b9385;margin:13px 0 0}#stage{height:clamp(330px,52vh,650px);width:100%;position:relative;margin-top:-4px}canvas{display:block;width:100%;height:100%;touch-action:pan-y}#loading{position:absolute;inset:45% 0;text-align:center;font-size:14px;color:#7b8d85}.scene-caption{display:flex;justify-content:center;align-items:center;gap:12px;font:12px 'Apple SD Gothic Neo',sans-serif;color:#81938a;margin:0 auto 22px}.scene-caption .chapter{color:#476f69;border:1px solid #9aafa655;border-radius:20px;padding:5px 11px;font-size:10px}.dot{color:#b8beab}.controls{max-width:514px;margin:0 auto;background:#fffcf5dd;border:1px solid #dcdccdbb;box-shadow:0 6px 24px #6e756a08;border-radius:18px;padding:9px 14px 16px}.actions{display:flex;gap:5px;border-bottom:1px solid #dcdccdaa;padding-bottom:10px}button{flex:1;min-height:43px;border:0;border-radius:10px;background:transparent;color:#64817b;font:12px 'Apple SD Gothic Neo',sans-serif;cursor:pointer;white-space:nowrap}button span{margin-left:9px;font-size:16px}button.primary{color:#fff9e9;background:#1b696c}button:hover{background:#e6eade}button.primary:hover{background:#18565a}button:focus-visible,input:focus-visible{outline:3px solid #dbac4e;outline-offset:3px}.scrubber{display:flex;align-items:center;gap:18px;padding:16px 8px 0;font:11px 'Apple SD Gothic Neo',sans-serif;color:#85958c}.scrubber label{white-space:nowrap}input{flex:1;min-width:0;accent-color:#246f70;cursor:ew-resize;height:22px;margin:-5px 0;touch-action:none}output{min-width:31px;text-align:right;font-variant-numeric:tabular-nums;color:#365e5e}footer{margin:28px 5% 0;padding:20px 0;display:flex;justify-content:space-between;font:10px 'Apple SD Gothic Neo',sans-serif;color:#9aab9e;letter-spacing:.06em}@media(max-width:600px){header{height:65px}.edition{font-size:8px}.brand{font-size:11px}.heading{padding-top:32px}#stage{height:390px;margin-top:0}.controls{margin:0 18px;padding-inline:8px}button{font-size:11px}button span{margin-left:3px}.scene-caption{font-size:11px;margin-bottom:17px}footer{font-size:8px;margin-top:20px}.intro{font-size:11px}h1{font-size:25px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+@font-face{font-family:'Jua';src:url('./assets/fonts/Jua-Regular.ttf') format('truetype');font-style:normal;font-weight:400;font-display:swap}
+:root{font-family:'Jua','Apple SD Gothic Neo',sans-serif;color:#214b4e;background:#f7f2e8;font-synthesis:none}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 43%,#fffcf4 0,#f7f2e8 70%);min-height:100svh}header{height:85px;display:flex;align-items:center;justify-content:space-between;margin:0 5%;border-bottom:1px solid #214b4e18}.brand{color:inherit;text-decoration:none;font-family:'Jua','Apple SD Gothic Neo',sans-serif;font-size:13px;letter-spacing:.08em;display:flex;align-items:center;gap:10px}.mark{font-size:30px;color:#ba923d}.edition{font:10px Arial,sans-serif;letter-spacing:.2em;color:#738b88}.heading{text-align:center;padding-top:32px;position:relative;z-index:1;pointer-events:none}.eyebrow{font:11px 'Jua','Apple SD Gothic Neo',sans-serif;letter-spacing:.2em;color:#8b977e;margin:0 0 12px}h1{font-size:clamp(24px,3vw,38px);font-weight:500;letter-spacing:-.065em;margin:0}.intro{font:12px 'Jua','Apple SD Gothic Neo',sans-serif;color:#8b9385;margin:13px 0 0}#stage{height:clamp(330px,52vh,650px);width:100%;position:relative;margin-top:-4px}canvas{display:block;width:100%;height:100%;touch-action:pan-y}#loading{position:absolute;inset:45% 0;text-align:center;font-size:14px;color:#7b8d85}.scene-caption{display:flex;justify-content:center;align-items:center;gap:12px;font:12px 'Jua','Apple SD Gothic Neo',sans-serif;color:#81938a;margin:0 auto 22px}.scene-caption .chapter{color:#476f69;border:1px solid #9aafa655;border-radius:20px;padding:5px 11px;font-size:10px}.dot{color:#b8beab}.controls{max-width:514px;margin:0 auto;background:#fffcf5dd;border:1px solid #dcdccdbb;box-shadow:0 6px 24px #6e756a08;border-radius:18px;padding:9px 14px 16px}.actions{display:flex;gap:5px;border-bottom:1px solid #dcdccdaa;padding-bottom:10px}button{flex:1;min-height:43px;border:0;border-radius:10px;background:transparent;color:#64817b;font:12px 'Jua','Apple SD Gothic Neo',sans-serif;cursor:pointer;white-space:nowrap}button span{margin-left:9px;font-size:16px}button.primary{color:#fff9e9;background:#1b696c}button:hover{background:#e6eade}button.primary:hover{background:#18565a}button:focus-visible,input:focus-visible{outline:3px solid #dbac4e;outline-offset:3px}.scrubber{display:flex;align-items:center;gap:18px;padding:16px 8px 0;font:11px 'Jua','Apple SD Gothic Neo',sans-serif;color:#85958c}.scrubber label{white-space:nowrap}input{flex:1;min-width:0;accent-color:#246f70;cursor:ew-resize;height:22px;margin:-5px 0;touch-action:none}output{min-width:31px;text-align:right;font-variant-numeric:tabular-nums;color:#365e5e}footer{margin:28px 5% 0;padding:20px 0;display:flex;justify-content:space-between;font:10px 'Jua','Apple SD Gothic Neo',sans-serif;color:#9aab9e;letter-spacing:.06em}@media(max-width:600px){header{height:65px}.edition{font-size:8px}.brand{font-size:11px}.heading{padding-top:32px}#stage{height:390px;margin-top:0}.controls{margin:0 18px;padding-inline:8px}button{font-size:11px}button span{margin-left:3px}.scene-caption{font-size:11px;margin-bottom:17px}footer{font-size:8px;margin-top:20px}.intro{font-size:11px}h1{font-size:25px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+
+[hidden]{display:none!important}#story-ui{position:relative;max-width:1120px;margin:-32px auto 24px;text-align:center;padding:0 24px}#start-story{min-width:170px;padding:0 24px}#narration{font:16px/1.45 'Jua','Apple SD Gothic Neo',sans-serif;color:#365e5e;min-height:0;word-break:keep-all;overflow-wrap:anywhere}#story-nav{display:flex;align-items:center;gap:18px;margin-top:8px}#story-nav button{flex:0 0 78px}#story-hint{flex:1;font:400 12px/1.5 'Pretendard','Apple SD Gothic Neo',sans-serif;color:#8d8061}button:disabled,input:disabled{opacity:.4;cursor:default}.scene-label{position:absolute;transform:translate(-50%,-100%);pointer-events:none;font:12px 'Jua','Apple SD Gothic Neo',sans-serif;color:#6e7560;background:#fffaeadd;border:1px solid #d8c7a1;border-radius:14px;padding:6px 12px;white-space:nowrap}.boat-target{position:absolute;transform:translate(-50%,-50%);width:110px;height:100px;min-width:64px;min-height:64px;background:transparent;border:2px dashed #bc953c99;border-radius:50%;font:11px 'Jua','Apple SD Gothic Neo',sans-serif;color:#5c695b}.boat-target span{position:absolute;top:100%;left:50%;transform:translateX(-50%);margin:5px 0 0;padding:6px 9px;border-radius:12px;background:#fff9e9;white-space:nowrap;font-size:11px}.boat-target:hover{background:#e6c76718}#speech{color:#7d584b;background:#fff7e8;font-size:13px;padding:6px 10px}@media(max-width:600px){#story-ui{margin-top:-22px;padding:0 18px}#narration{font-size:14px;min-height:0}#story-hint{font-size:12px}.scene-label{font-size:10px;padding:4px 8px}.boat-target{width:72px;height:70px}#story-nav{gap:8px}}
+
+/* Persistent navigation beside the book, independent of playback controls. */
+.page-arrow{position:absolute;z-index:4;top:62%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;justify-content:center;width:64px;min-height:88px;padding:4px;border:1px solid #b9c7bb;background:#fffaf0eb;border-radius:32px;box-shadow:0 4px 16px #365e5e0a;color:#28696a;gap:0}
+.page-arrow-left{left:max(16px,calc(50% - 510px))}.page-arrow-right{right:max(16px,calc(50% - 510px))}
+.page-arrow span{font:44px/1 Georgia,serif;margin:0}.page-arrow small{font:12px/1.5 'Jua','Apple SD Gothic Neo',sans-serif}.page-arrow:disabled{opacity:.3}.page-arrow:hover:not(:disabled){background:#e8efe3;border-color:#648e80}.actions{gap:16px}.actions button{flex:1}
+@media(max-width:600px){.page-arrow{top:85%;width:46px;min-height:64px;border-radius:24px}.page-arrow span{font-size:32px}.page-arrow small{font-size:10px}.page-arrow-left{left:10px}.page-arrow-right{right:10px}}
+#voyage-boat{width:clamp(160px,18vw,260px);height:clamp(140px,16vw,230px);border-color:#bc953c55}
+/* Character dialogue floats in the upper-right space above the book. */
+.storm-dialogue{position:absolute;z-index:3;top:8%;left:calc(50% + clamp(70px,12vw,190px));transform:translateX(-50%);width:clamp(220px,24vw,320px);max-width:calc(100% - 40px);font:13px/1.65 'Jua','Apple SD Gothic Neo',sans-serif;text-align:left;color:#7d584b;background:#fff7e8;border:1px solid #d8c7a1;border-radius:20px;padding:14px 18px;margin:0;word-break:keep-all;overflow-wrap:anywhere;box-shadow:0 5px 18px #6e756a0c;pointer-events:none}
+.storm-dialogue::after{content:'';position:absolute;bottom:-9px;left:25%;width:16px;height:16px;background:#fff7e8;border-right:1px solid #d8c7a1;border-bottom:1px solid #d8c7a1;transform:skew(-15deg) rotate(45deg)}
+@media(max-width:600px){.storm-dialogue{top:2%;left:50%;width:min(300px,80vw);font-size:12px;padding:12px 16px}.storm-dialogue::after{left:60%}}
+
+#end-actions{display:flex;justify-content:center;gap:12px;margin:12px 0}#end-actions[hidden]{display:none}#end-actions button{border:1px solid #9cae9f;border-radius:20px;padding:10px 22px;background:#f4eddc;color:#245b5c;cursor:pointer}#end-actions button:disabled{opacity:.45}
+
+/* One shared mobile frame for the cover and every story spread. */
+@media(max-width:600px){
+ .heading{height:140px;padding-top:22px;padding-inline:16px}
+ h1{font-size:clamp(21px,5.7vw,25px);line-height:1.2;min-height:60px;display:flex;align-items:center;justify-content:center}
+ .eyebrow{margin-bottom:4px}
+ .intro{margin-top:4px}
+ #stage{height:clamp(250px,64vw,280px);margin-top:0}
+ .page-arrow{top:50%;width:44px;min-height:60px}
+ .page-arrow-left{left:8px}.page-arrow-right{right:8px}
+ #story-ui{margin-top:0;min-height:74px;margin-bottom:16px}
+ .storm-dialogue{top:0;left:57%;width:min(260px,74vw);padding:9px 12px;line-height:1.5}
+}
+
+#qa-tools{display:flex;flex-wrap:wrap;gap:8px;max-width:100%;padding:8px}#qa-tools input{width:65px}
+
+h1{font-weight:400;letter-spacing:-.025em}#narration{line-height:1.65}
+
+/* Quiet supporting copy and a compact, tactile playback panel. */
+@font-face{font-family:'Pretendard';src:url('./assets/fonts/PretendardVariable.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
+.eyebrow,.intro,#loading{font-family:'Pretendard',sans-serif}
+.eyebrow{font-weight:600;letter-spacing:.12em}
+.intro{font-weight:400;color:#78847b}
+/* Reference artwork: paper bookmarks and a cream-and-gold player. */
+.page-arrow{width:78px;min-height:110px;border:0;border-radius:17px 17px 6px 6px;padding:15px 0 23px;gap:4px;color:#fff1ca;background:linear-gradient(145deg,#138b90,#047079);clip-path:polygon(0 0,100% 0,100% 100%,50% 88%,0 100%);box-shadow:inset 0 2px 2px #ffffff30,inset 0 0 0 1px #006a7155;filter:drop-shadow(0 5px 6px #46655220)}
+.page-arrow::before,#pause::before{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;opacity:.12;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='%23fff' filter='url(%23n)' opacity='.5' d='M0 0h120v120H0z'/%3E%3C/svg%3E")}
+.page-arrow .chevron{width:36px;height:36px;fill:none;stroke:currentColor;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 1px #003c3c33)}
+.page-arrow small{font:17px/1.4 'Jua',sans-serif}
+.page-arrow:disabled{opacity:1;background:linear-gradient(145deg,#e1e5d0,#d8dec7);color:#a7b19e;box-shadow:inset 0 1px 2px #ffffff60;filter:none}
+.page-arrow:hover:not(:disabled){background:linear-gradient(145deg,#15969a,#08636d);color:#fff6df}
+.page-arrow:focus-visible{outline:0;background:#0a555f;box-shadow:inset 0 0 0 4px #efc76d}
+.controls{display:flex;align-items:center;gap:26px;width:calc(100% - 36px);max-width:656px;min-height:104px;margin:0 auto;padding:11px 28px;border:1px solid #efce92;border-radius:24px;background:linear-gradient(120deg,#fffaf0,#fffdf5 55%,#faf3e4);box-shadow:0 7px 16px #80683112,inset 0 1px 0 #fff}
+.actions{display:flex;align-items:center;flex:0 0 auto;gap:28px;padding:0;border:0}
+.actions button{flex:none;font-family:'Jua',sans-serif;padding:0;transition:background .15s,box-shadow .15s}
+#replay{display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:0;color:#155963;position:relative;min-height:64px;width:64px;border-radius:32px}
+#replay span{margin:0}
+.replay-disc{display:grid;place-items:center;width:64px;height:64px;border:1px solid #e8c48c;border-radius:50%;background:linear-gradient(#fffef8,#fbf1dd);box-shadow:0 2px 3px #8d6e2420}
+.replay-disc svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+#replay .replay-label{position:absolute;top:calc(100% + 3px);font:11px/1.2 'Jua',sans-serif}
+#replay:hover .replay-disc{background:#f6e7c8;box-shadow:0 3px 8px #8d6e2425}
+#pause{position:relative;display:grid;place-items:center;width:66.42px;height:66.42px;min-height:66.42px;border-radius:50%;background:linear-gradient(145deg,#16848a,#096874);border:1px solid #157d83;color:#fff2d0;box-shadow:inset 0 2px 2px #ffffff20,0 3px 5px #315e5126}
+#pause:hover{background:linear-gradient(145deg,#1c959b,#075b65)}
+#pause svg{width:30.78px;height:30.78px;filter:drop-shadow(0 1px 1px #003b3f55)}
+.play-icon{fill:currentColor;stroke:currentColor;stroke-width:3;stroke-linejoin:round;transform:translateX(2px)}
+.pause-icon{fill:none;stroke:currentColor;stroke-width:6;stroke-linecap:round}
+#pause[data-mode="play"] .pause-icon,#pause[data-mode="pause"] .play-icon{display:none}
+.scrubber{display:grid;flex:1;min-width:0;grid-template-columns:1fr 36px;grid-template-rows:auto 34px;column-gap:16px;row-gap:2px;padding:0 0 0 26px;border-left:1px solid #edc98f;font-family:'Jua',sans-serif;color:#155963}
+.scrubber label{grid-column:1 / -1;grid-row:1;font:20px/1.2 'Jua',sans-serif;white-space:nowrap}
+.scrubber output{grid-column:2;grid-row:2;align-self:center;font:16px/1 'Jua',sans-serif;color:#155963;min-width:0;text-align:right}
+#progress{grid-column:1;grid-row:2;align-self:center;appearance:none;-webkit-appearance:none;width:100%;height:34px;margin:0;background:transparent;cursor:pointer}
+#progress::-webkit-slider-runnable-track{height:16px;border-radius:12px;border:1px solid #cbd2b9;background:linear-gradient(to right,#13838a var(--fill,0%),#d8ddc8 var(--fill,0%));box-shadow:inset 0 1px 3px #6b765b16}
+#progress::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:33px;height:33px;margin-top:-9px;border:1px solid #f1c967;border-radius:50%;background:linear-gradient(135deg,#ffe69c,#f8d477);box-shadow:0 3px 4px #99793025,inset 0 1px 1px #fff3ba}
+#progress::-moz-range-track{height:14px;border:1px solid #cbd2b9;border-radius:12px;background:#d8ddc8}
+#progress::-moz-range-progress{height:12px;border-radius:12px;background:#13838a}
+#progress::-moz-range-thumb{width:31px;height:31px;border:1px solid #f1c967;border-radius:50%;background:linear-gradient(135deg,#ffe69c,#f8d477);box-shadow:0 3px 4px #99793025}
+@media(max-width:600px){
+ .page-arrow{width:48px;min-height:76px;border-radius:12px 12px 4px 4px;padding:10px 0 17px;gap:2px}.page-arrow .chevron{width:26px;height:26px;stroke-width:5}.page-arrow small{font-size:12px}
+ .controls{gap:14px;padding:12px 14px;min-height:90px;border-radius:21px}.actions{gap:14px}
+ #replay{width:48px;min-height:48px}.replay-disc{width:48px;height:48px}.replay-disc svg{width:28px;height:28px}#replay .replay-label{font-size:9px}
+ #pause{width:48.6px;height:48.6px;min-height:48.6px}#pause svg{width:24.3px;height:24.3px}
+ .scrubber{padding-left:14px;column-gap:8px;grid-template-columns:1fr 28px;grid-template-rows:auto 30px}.scrubber label{font-size:16px}.scrubber output{font-size:13px}
+ #progress::-webkit-slider-runnable-track{height:12px}#progress::-webkit-slider-thumb{width:27px;height:27px;margin-top:-8px}#progress::-moz-range-thumb{width:25px;height:25px}
+}
+@media(max-width:360px){.controls{gap:10px;padding-inline:12px}.actions{gap:10px}#pause{width:42.12px;height:42.12px;min-height:42.12px}.scrubber{padding-left:10px;column-gap:6px}}
+
+@media(max-width:360px){#replay{width:44px;min-height:44px}.replay-disc{width:44px;height:44px}.replay-disc svg{width:26px;height:26px}}
+
+/* User-supplied logo, preserving its transparent artwork and aspect ratio. */
+.brand{display:block;width:250px;height:70px;overflow:hidden;position:relative;flex-shrink:0}
+.brand-logo{display:block;width:100%;height:auto;position:absolute;left:0;top:50%;transform:translateY(-50%)}
+@media(max-width:600px){.brand{width:190px;height:60px}}
+@media(max-width:360px){.brand{width:170px}}
+
+/* Larger story copy across every scene, including character dialogue. */
+#narration{font-size:24px;line-height:1.6;word-break:keep-all;overflow-wrap:anywhere}
+#speech{font-size:18px;line-height:1.5;white-space:normal;width:max-content;max-width:min(320px,80vw);padding:9px 14px;text-align:center;word-break:keep-all}
+.storm-dialogue{font-size:18px;line-height:1.6;width:clamp(280px,28vw,390px)}
+@media(max-width:600px){
+ #narration{font-size:20px;line-height:1.6}
+ #speech{font-size:16px;max-width:76vw;padding:7px 11px}
+ .storm-dialogue{font-size:16px;line-height:1.5;width:min(310px,82vw);left:50%}
+}
+
+footer.creator-credit{justify-content:center;font:12px/1.5 'Pretendard',sans-serif;letter-spacing:.03em;color:#7b8d83}
+
+/* All scene interaction hints share the supporting-text typeface. */
+.boat-target,.boat-target span{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif}
+
+/* Reserve identical title/caption tracks for every page, including the cover.
+   Text wrapping and hidden hints must never move the shared playback panel. */
+.heading{height:140px}
+#story-ui{display:grid;grid-template-rows:80px 36px;row-gap:8px;height:124px;min-height:124px;margin:-32px auto 24px;align-content:start}
+#narration{grid-row:1;align-self:start}
+#story-nav{grid-row:2;align-self:start;margin-top:0;min-width:0}
+#end-actions{max-width:656px;margin:16px auto 0}
+@media(min-width:601px) and (max-width:900px){#story-ui{grid-template-rows:116px 36px;height:160px;min-height:160px}}
+@media(max-width:600px){
+ .heading{height:140px}
+ #story-ui{grid-template-rows:128px 36px;row-gap:8px;height:172px;min-height:172px;margin:0 auto 16px}
+}
+@media(max-width:360px){#story-ui{grid-template-rows:160px 36px;height:204px;min-height:204px}}
+
+/* Stage overlays never participate in the narration/player layout. */
+.voyage-callout{position:absolute;z-index:5;width:204px;padding:10px 15px;border:1px solid #d6b66f;border-radius:18px;background:#fffaf0;color:#416969;text-align:center;font:400 14px/1.55 'Pretendard',sans-serif;pointer-events:none;box-shadow:0 3px 10px #8068310c}
+.voyage-callout svg{position:absolute;left:0;top:0;width:100vw;height:100%;overflow:visible;pointer-events:none}
+.voyage-callout path{fill:none;stroke:#b3924e;stroke-width:1.6;stroke-dasharray:4 5;stroke-linecap:round;stroke-linejoin:round}
+.voyage-callout .arrow-tip{stroke-dasharray:none}
+#voyage-boat{border-color:transparent}
+@media(max-width:600px){.voyage-callout{width:174px;padding:8px 10px;font-size:12px;border-radius:15px}}
+
+/* One shared layout owns the player position; story text cannot size its row. */
+html{scrollbar-gutter:stable}
+body{overflow-anchor:none}
+main{--book-height:clamp(330px,52vh,650px);--copy-height:124px;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:140px var(--book-height) var(--copy-height) auto auto;row-gap:0}
+.heading{grid-row:1;min-width:0}
+#stage{grid-row:2;height:var(--book-height);margin:0;min-width:0}
+#story-ui{grid-row:3;width:100%;height:var(--copy-height);min-height:0;margin:0 auto;padding-top:0;position:relative;contain:size layout}
+.controls{grid-row:4;align-self:start;position:relative;z-index:6}
+#end-actions{grid-row:5}
+@media(min-width:601px) and (max-width:900px){main{--copy-height:160px}}
+@media(max-width:600px){main{--book-height:clamp(250px,64vw,280px);--copy-height:188px}#story-ui{height:var(--copy-height);min-height:0;margin:0 auto}}
+@media(max-width:360px){main{--copy-height:220px}}
+
+/* Bring the shared player and next-scene hint closer to the story. */
+@media(min-width:1400px){
+ main{--copy-height:90px}
+ #story-ui{grid-template-rows:48px 28px;row-gap:8px;max-width:1400px}
+ #narration{font-size:24px;line-height:1.6}
+}
+@media(min-width:901px) and (max-width:1399px){
+ main{--copy-height:108px}
+ #story-ui{grid-template-rows:76px 24px;row-gap:4px}
+}
+@media(max-width:600px){main{--copy-height:172px}}
+@media(max-width:360px){main{--copy-height:204px}}
+
+/* Keep the player 16px higher without changing any scene-dependent spacing. */
+main{grid-template-rows:140px var(--book-height) calc(var(--copy-height) - 16px) auto auto}
+footer.creator-credit{position:fixed;left:0;right:0;bottom:0;z-index:10;margin:0;padding:6px 0 8px;font:12px/1.5 'Pretendard',sans-serif;color:#54766f;background:linear-gradient(transparent,#f7f2e8 35%);pointer-events:none}
+body{padding-bottom:32px}
+@media(min-width:901px){footer.creator-credit{left:auto;right:20px;width:max-content;padding-inline:10px;border-radius:8px}}
+
+.prayer-callout{animation:prayer-hint-enter .4s ease-out both}
+.prayer-callout svg path:first-child{animation:prayer-hint-dashes 1.8s linear infinite;animation-play-state:inherit}
+@keyframes prayer-hint-enter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@keyframes prayer-hint-dashes{to{stroke-dashoffset:-18}}
+@media(prefers-reduced-motion:reduce){.prayer-callout,.prayer-callout svg path:first-child{animation:none}}
+
+#loading{inset:30% 0 auto;display:flex;flex-direction:column;align-items:center;gap:25px;font:14px/1.5 'Pretendard',sans-serif}
+.loading-book{position:relative;width:100px;height:64px;border-bottom:7px solid #147d83;border-radius:8px;perspective:220px}
+.loading-book i{position:absolute;bottom:0;left:50%;width:48px;height:58px;background:#ffedc5;border:1px solid #d9bd80;border-radius:3px 9px 3px 0;transform-origin:left bottom;animation:loading-page 2.4s ease-in-out infinite}
+.loading-book i:nth-child(2){animation-delay:.3s}.loading-book i:nth-child(3){animation-delay:.6s}
+.loading-book b{position:absolute;top:-34px;left:40px;color:#c69a39;font-size:26px;animation:loading-star 1.6s ease-in-out infinite}
+@keyframes loading-page{0%,15%{transform:rotateY(0)}65%,100%{transform:rotateY(-180deg)}}
+@keyframes loading-star{50%{transform:translateY(-7px);opacity:.45}}
+.dialogue-speaker{color:#14777d;white-space:nowrap}.dialogue-speaker[data-speaker="요나"]{color:#b65332}
+@media(prefers-reduced-motion:reduce){.loading-book i,.loading-book b{animation:none}.loading-book i:first-child{transform:rotateY(-160deg)}}

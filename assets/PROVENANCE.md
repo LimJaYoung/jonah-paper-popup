@@ -11,3 +11,20 @@
 - jonah.png: Isolated small friendly Jonah like last panel: smiling brown-bearded man, short brown hair, cream robe, coral vest/scarf, yellow belt, both arms raised with open hands, sandals. Full body visible, tactile paper cutout and subtle layered shadows. Straight front view, transparent, no exterior glow/shadow or other objects. Cute adult storybook proportions, recognizable face and clothing.
 
 브라우저 구현은 알파 임계값으로 외곽의 반투명 번짐을 제외하고 윤곽에 얇은 종이 절단면을 붙인다. 원화의 픽셀 자체는 변경하지 않는다.
+
+## 본문 씬 1 · 2026-10-09
+
+내장 ImageGen 사용. 기존 소재는 변경하지 않았다. 생성 소재는 프로젝트에 복사했다.
+- `nineveh.png`: 기존 jonah.png와 책 캡처를 스타일 참고로 제공. 최종 프롬프트: Use case illustration-story. Reference images style only: match exactly the tactile fibrous layered cut-paper of this existing Jonah popup book. Create ONE isolated ancient Nineveh city gateway with crenellated cream and apricot walls, large teal arched door, tiny muted golden yellow accents, a few overlapping flat roof houses behind it. Warm cream handmade textured paper with crisp layered edges and subtle internal shadows. Wide front elevation, straight horizontal bottom attachment edge, entire silhouette visible. This will be a single upright cutout in existing Three.js pop-up, not a new scene. No book, people, boat, whale, water, ground, sky, lettering, external shadows, glow. Genuine transparent background.
+- `houses.png`: 생성 성문을 스타일 참고로 제공. 최종 프롬프트: Create one isolated row of 5 ancient Nineveh small houses, orthographic front elevation, no gate or walls. Match reference exactly: rich fibrous layered handmade cut-paper texture, cream and soft apricot, teal tiny doors and mustard yellow flat roof trims, a few low domes. Stepped skyline with small overlaps, straight bottom attachment edge. Wide 3:1 silhouette with transparent background. No sky ground book people lettering or external shadows/glow. This asset will be a background paper layer behind the reference gate, identical material and lighting.
+- 본문 요나와 배는 기존 `jonah.png`, `boat.png` 재사용. 요나의 머리·몸·발 관절은 같은 텍스처의 UV 구간으로 분리하며 원화 파일은 변경하지 않음.
+
+## 요나 뒷모습 · 2026-10-09
+
+내장 ImageGen으로 기존 jonah.png를 참조해 `jonah-back.png`를 추가했다. 앞면 원화는 보존했다.
+최종 프롬프트: Use case identity-preserve. Edit target is this exact cut paper Jonah character. Create the REVERSE SIDE artwork for the SAME paper doll viewed directly from behind. Preserve the exact front reference's full-body silhouette, outline, proportions, pose with BOTH arms raised, head size, hemline and foot positions, matching frame and scale. Keep identical brown layered hair, cream robe, coral sleeveless outer garment, yellow waist belt, brown sandals and tactile handmade paper grain. Show back of hair with NO face, NO eyes, NO nose, NO mouth and NO beard on the back. Back of coral vest is a continuous panel, cream sleeves, belt wraps around waist; rear heels/sandal straps rather than toes. Orthographic rear elevation, no perspective. This will texture the reverse of a rotating flat 3D paper doll, must register to the original silhouette. Entire figure visible on genuinely transparent background, no book, ground, scenery, text, exterior glow or shadow. Preserve original art style meticulously.
+
+## Scene 2 sailor (2026-10-09)
+- `sailor.png`: generated with imagegen using existing `jonah.png` as the paper-style reference. Transparent adult sailor, teal headscarf/vest, cream tunic, mustard sash. Original saved in Codex generated_images; copied without replacing original assets.
+- Prompt: isolated friendly adult ancient sailor in exactly the existing layered fibrous handmade cut-paper style, full body, arms raised for shoulder articulation, transparent background, no text or ship.
+- Scene 2 reuses original boat, Jonah front/back, houses and wave assets. Dock and cabin use the existing procedural cardstock materials.

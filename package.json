@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node server.mjs",
     "start": "node server.mjs",
-    "check": "node --check app.js && node --check server.mjs",
+    "check": "node --check app.js && node --check scene2.js && node --check scene3.js && node --check story-kit.js && node --check scene4.js && node --check scene5.js && node --check scene6.js && node --check scene7.js && node --check scene8.js && node --check vessel.js && node --check server.mjs",
     "build": "node scripts/build.mjs",
     "deploy": "npm run check && npm run build && node scripts/deploy.mjs"
   }
