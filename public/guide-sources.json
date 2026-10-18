@@ -1,0 +1,132 @@
+{
+  "guidelineVersion": "3.2.6 · 2026-10-18 · 적용: 새 동화 / 기존 동화 수정 / 작업 재개",
+  "scope": "official-guidelines-only",
+  "sources": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "3531847c976c6e3a1bd47c201d8050e95690bcad0e5cf9c5fa5913b360796b26"
+    },
+    {
+      "path": "MASTER/PRODUCTION_PLAYBOOK.md",
+      "sha256": "897ec898c83ff7680036ef7ba5e4e7e580eaeb063534b06c94ce1ab082cdacde"
+    },
+    {
+      "path": "MASTER/GUIDELINE_AUDIT.md",
+      "sha256": "a61b82c6f48e86233b15945a11646e77e5fa6de21072c180bfa1250fc7a8b046"
+    },
+    {
+      "path": "MASTER/DESIGN_ANIMATION_PROTOCOL.md",
+      "sha256": "a454eb4dba4c0e51a00547ec5a35909f637335733df271058936741a263d188f"
+    },
+    {
+      "path": "MASTER/INDEX.md",
+      "sha256": "604d22726e0992e108b56e9059372cca48ffaa43bb5d4197ee1697853081b3df"
+    },
+    {
+      "path": "MASTER/IMPLEMENTATION_STATUS.md",
+      "sha256": "d29d3cb1dee54f94185b8e0392e4d90a3f9cc765cc445cf726c7b8ffade3fe2a"
+    },
+    {
+      "path": "MASTER/STORY_GUIDE.md",
+      "sha256": "ca4327956f802545bf0de222ce733402cf6a99ee153ce841a49c0b5cea93d5b4"
+    },
+    {
+      "path": "MASTER/DESIGN_SYSTEM.md",
+      "sha256": "b016ae85e23f7de651c054c4ad058e6acfed6de8ac8704b71bf4b6b5ce4ac165"
+    },
+    {
+      "path": "MASTER/AUDIO_GUIDE.md",
+      "sha256": "d743b39596212d9d560e349ddd327a9f23f6404dece5513abc4466c2447372b6"
+    },
+    {
+      "path": "MASTER/ANIMATION_GUIDE.md",
+      "sha256": "1591c6175a822030a4b2c3c016ef54788a688d4a805970db0096ae9e14a6bff6"
+    },
+    {
+      "path": "MASTER/QA_CHECKLIST.md",
+      "sha256": "59df9fa7ad4fd49b86643ba873e309cc5d4ae42a293e41938e44ab9928c64167"
+    },
+    {
+      "path": "MASTER/LAYOUT_PARITY.md",
+      "sha256": "c31598db01993f81845d80d79cf5a70bab7bb4929c969c5306fc8e904a9df650"
+    },
+    {
+      "path": "MASTER/VIDEO_EXPORT.md",
+      "sha256": "db73c01708c80679f0ef96d64481bfc5dc9a8f54cce793f6cff27dc9ed22f9d6"
+    },
+    {
+      "path": "MASTER/SERIES_GUIDE.md",
+      "sha256": "fd10ae99a2f8ede76615d09fb59d54fe11ac161114367bced403e28920d0b7dd"
+    },
+    {
+      "path": "MASTER/YOUTUBE_AUTOMATION.md",
+      "sha256": "edf7d36de786a158d8691d4ce4d2337ede0b68d7862921a1e8e2163e8bd9262c"
+    },
+    {
+      "path": "MASTER/HANDOFF.md",
+      "sha256": "ef5d8777f461d9d85e0ec8615f9a3c52b3db39f904225f49997b99270400e887"
+    },
+    {
+      "path": "MASTER/PRODUCTION_RECORD_TEMPLATE.md",
+      "sha256": "7a518ee79664cb1451fcabf30950c3114341188bd956947f17c28e5f3ecd16f0"
+    },
+    {
+      "path": "MASTER/STORY_TEMPLATE.md",
+      "sha256": "8fc990a56cdd8b24d11e7b31430524b3a18deeef78c30c50aaaa80f0564f2117"
+    },
+    {
+      "path": "MASTER/GUIDELINE_HISTORY.md",
+      "sha256": "e68493fee131cbe5166c6328e18b968a5f739698d00ee5da7ba2ae3e3f7772c2"
+    },
+    {
+      "path": "STORIES/01-jonah/STORY_RULES.md",
+      "sha256": "43856a09b0fb599abbe2f0318bb15220ee00fe93d6c8a37b23c8acec82656b83"
+    },
+    {
+      "path": "STORIES/01-jonah-v2/STORY_RULES.md",
+      "sha256": "40b2df4ffc356d5ee70074faa6adffc9522512fcdaf4a62c72735405c5760456"
+    },
+    {
+      "path": "STORIES/02-noah/STORY_RULES.md",
+      "sha256": "33057e3479cd9ffe58eefdd726fb97ac44635e6aa41adaa5a46416aee2db6650"
+    },
+    {
+      "path": "STORIES/noah/STORY_RULES.md",
+      "sha256": "470ca389caef5ed92f127c5845c12d86bd8afc4a610c8213ec90c71c5e0260c4"
+    },
+    {
+      "path": "DEPLOYMENT/WEB_CONTROL.md",
+      "sha256": "33020339ceef4d5ae6c5bc865fa6aa34fb9b4c7b53919d9860fd5ce3d0ffd654"
+    },
+    {
+      "path": "DEPLOYMENT/AI_EXECUTOR.md",
+      "sha256": "757c2d28a0f20df87844549418a107b5d94d233305150a0dfdb399b3ff9c3f9e"
+    }
+  ],
+  "outputSha256": "8295a554a9a3e819583fdbf26a02f7b05fb49bd329b3bfa03053a905f2d2b49f",
+  "internalLinks": 172,
+  "stages": [
+    "stage-00",
+    "stage-01",
+    "stage-02",
+    "stage-03",
+    "stage-04",
+    "stage-05",
+    "stage-06",
+    "stage-07",
+    "stage-08",
+    "stage-09",
+    "stage-10",
+    "stage-11",
+    "stage-12",
+    "stage-13",
+    "stage-14"
+  ],
+  "sections": [
+    "reading",
+    "procedure",
+    "quality",
+    "resume",
+    "references"
+  ]
+}
